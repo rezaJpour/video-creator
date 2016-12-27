@@ -37,7 +37,7 @@ public class ExportFragment extends Fragment {
 
         saveImageView = (ImageView) inflatedView.findViewById(R.id.image_save_to_device);
         uploadImageView = (ImageView) inflatedView.findViewById(R.id.image_upload);
-        uploadImageView.setOnClickListener(new UploadVideoClickListener(inflatedView));
+        uploadImageView.setOnClickListener(new UploadVideoClickListener());
 
         return inflatedView;
     }
@@ -45,13 +45,13 @@ public class ExportFragment extends Fragment {
     // TODO: Everything is hard coded, but this is the general idea for video upload
     // TODO: Save video locally
 
-    private void uploadVideo(final View view) {
+    private void uploadVideo() {
         try {
             InputStream is = getResources().openRawResource(getResources().getIdentifier("samplevideo", "raw", getActivity().getPackageName()));
             AndroidStreamable.uploadVideo(is, "Created and uploaded via VideoCreator for Android", new NewVideoCallback() {
                 @Override
                 public void onSuccess(int statusCode, final NewVideo newVideo) {
-                    Snackbar snackbar = Snackbar.make(view, "Upload successful! ", Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.project_outer), "Upload successful! ", Snackbar.LENGTH_LONG);
                     snackbar.setAction("OPEN", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -65,7 +65,7 @@ public class ExportFragment extends Fragment {
 
                 @Override
                 public void onFailure(int statusCode, Throwable error) {
-                    Snackbar snackbar = Snackbar.make(view, "Upload failed!", Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.project_outer), "Upload failed!", Snackbar.LENGTH_LONG);
                     snackbar.show();
                     uploadImageView.setColorFilter(null);
                 }
@@ -79,15 +79,9 @@ public class ExportFragment extends Fragment {
 
     private class UploadVideoClickListener implements View.OnClickListener {
 
-        private View inflatedView;
-
-        UploadVideoClickListener(View inflatedView) {
-            this.inflatedView = inflatedView;
-        }
-
         @Override
         public void onClick(View view) {
-            Snackbar snackbar = Snackbar.make(inflatedView, "Starting video upload to Streamable.com", Snackbar.LENGTH_LONG);
+            Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.project_outer), "Starting video upload to Streamable.com", Snackbar.LENGTH_LONG);
             snackbar.setAction("CANCEL", new View.OnClickListener() {
 
                 @Override
@@ -104,7 +98,7 @@ public class ExportFragment extends Fragment {
                         return;
                     }
                     //start upload now
-                    uploadVideo(inflatedView);
+                    uploadVideo();
                 }
 
                 @Override
