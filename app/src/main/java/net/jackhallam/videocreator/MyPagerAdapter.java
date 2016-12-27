@@ -15,28 +15,23 @@ import net.jackhallam.videocreator.pages.ImportFragment;
 
 class MyPagerAdapter extends FragmentPagerAdapter {
 
-    public MyPagerAdapter(FragmentManager fm) {
+    private Fragment[] pages = new Fragment[4];
+
+    MyPagerAdapter(FragmentManager fm) {
         super(fm);
+        pages[0] = new ImportFragment();
+        pages[1] = new CameraFragment();
+        pages[2] = new EditFragment();
+        pages[3] = new ExportFragment();
     }
 
     @Override
     public Fragment getItem(int pos) {
-        switch (pos) {
-            case 0:
-                return new ImportFragment();
-            case 1:
-                return new CameraFragment();
-            case 2:
-                return new EditFragment();
-            case 3:
-                return new ExportFragment();
-            default:
-                return null;
-        }
+        return pages[pos];
     }
 
     @Override
     public int getCount() {
-        return 4;
+        return pages.length;
     }
 }

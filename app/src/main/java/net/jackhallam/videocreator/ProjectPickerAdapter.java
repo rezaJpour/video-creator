@@ -12,21 +12,29 @@ import net.jackhallam.videocreator.pages.ImportFragment;
  * Created by jackhallam on 12/26/16.
  */
 
-public class ProjectPickerAdapter extends RecyclerView.Adapter<ProjectPickerAdapter.ViewHolder> {
+public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public ProjectPickerAdapter(Context context, RecyclerView recyclerView) {
 
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.project_picker_view, parent, false);
-        return new ViewHolder(itemView);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case 0: return new TitleViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.title_project_picker_view, parent, false));
+            case 1: return new ProjectViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.project_picker_view, parent, false));
+            default: return null;
+        }
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position == 0 ? 0 : 1;
     }
 
     @Override
@@ -34,8 +42,14 @@ public class ProjectPickerAdapter extends RecyclerView.Adapter<ProjectPickerAdap
         return 20;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public ViewHolder(View itemView) {
+    public class ProjectViewHolder extends RecyclerView.ViewHolder {
+        public ProjectViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    public class TitleViewHolder extends RecyclerView.ViewHolder {
+        public TitleViewHolder(View itemView) {
             super(itemView);
         }
     }
