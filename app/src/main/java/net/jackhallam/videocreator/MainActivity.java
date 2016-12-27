@@ -14,6 +14,5 @@ public class MainActivity extends FragmentActivity {
 
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
-        pager.setCurrentItem(1);
     }
 }
