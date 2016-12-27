@@ -27,54 +27,20 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48sp"
+                android:layout_height="48sp"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="12dp"
                 android:src="@drawable/ic_movie_white_48dp" />
 
-            <LinearLayout
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="My Untitled Movie"
                 android:layout_gravity="center_vertical"
-                android:layout_marginBottom="12dp"
-                android:layout_marginTop="12dp"
-                android:orientation="vertical">
+                android:textColor="@color/white"
+                android:textSize="32sp" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="My Untitled Movie"
-                        android:textColor="@color/white"
-                        android:textSize="28sp" />
-
-                    <ImageView
-                        android:layout_width="28sp"
-                        android:layout_height="28sp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="10sp"
-                        android:src="@drawable/ic_cloud_queue_white_48dp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Created 6/29/16, Last Edited 7/12/16"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="12m 45s, 35 clips"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </LinearLayout>
