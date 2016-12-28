@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import net.jackhallam.videocreator.pages.ImportFragment;
 
 /**
  * Created by jackhallam on 12/26/16.
