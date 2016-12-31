@@ -9,29 +9,33 @@ import net.jackhallam.videocreator.pages.EditFragment;
 import net.jackhallam.videocreator.pages.ExportFragment;
 import net.jackhallam.videocreator.pages.ImportFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by jackhallam on 12/24/16.
  */
 
 class MyPagerAdapter extends FragmentPagerAdapter {
 
-    private Fragment[] pages = new Fragment[4];
+    private List<Fragment> pages = new ArrayList<>();
 
     MyPagerAdapter(FragmentManager fm) {
         super(fm);
-        pages[0] = new ImportFragment();
-        pages[1] = new CameraFragment();
-        pages[2] = new EditFragment();
-        pages[3] = new ExportFragment();
+        pages.add(new LoginFragment());
+        pages.add(new ImportFragment());
+        pages.add(new CameraFragment());
+        pages.add(new EditFragment());
+        pages.add(new ExportFragment());
     }
 
     @Override
     public Fragment getItem(int pos) {
-        return pages[pos];
+        return pages.get(pos);
     }
 
     @Override
     public int getCount() {
-        return pages.length;
+        return pages.size();
     }
 }
