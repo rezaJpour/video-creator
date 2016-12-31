@@ -38,6 +38,10 @@ public class MainActivity extends FragmentActivity {
 
     private void hideDisplayFAB(int position, FloatingActionButton fab) {
         switch (position) {
+            case 0:
+                fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_help_black_48dp));
+                fab.show();
+                break;
             case 1:
                 fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_48dp));
                 fab.show();

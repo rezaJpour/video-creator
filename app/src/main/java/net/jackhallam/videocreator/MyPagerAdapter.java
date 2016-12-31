@@ -8,6 +8,7 @@ import net.jackhallam.videocreator.pages.CameraFragment;
 import net.jackhallam.videocreator.pages.EditFragment;
 import net.jackhallam.videocreator.pages.ExportFragment;
 import net.jackhallam.videocreator.pages.ImportFragment;
+import net.jackhallam.videocreator.pages.LoginFragment;
 
 import java.util.ArrayList;
 import java.util.List;
