@@ -22,6 +22,7 @@
             android:layout_width="156dp"
             android:layout_height="156dp"
             android:layout_margin="18dp"
+            android:id="@+id/cameraImage"
             android:src="@drawable/ic_videocam_white_48dp" />
     </LinearLayout>
 </FrameLayout>
