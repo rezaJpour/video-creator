@@ -4,6 +4,7 @@ package net.jackhallam.videocreator.pages;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -44,9 +45,9 @@ public class ImportFragment extends Fragment {
         mainActivity.getFab(2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                Intent intent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
                 if (intent.resolveActivity(mainActivity.getPackageManager()) != null) {
-                    mainActivity.startActivityForResult(intent, REQUEST_VIDEO_CAPTURE );
+                    startActivityForResult(intent, REQUEST_VIDEO_CAPTURE );
                 }
             }
         });
