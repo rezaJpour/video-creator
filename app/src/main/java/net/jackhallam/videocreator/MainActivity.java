@@ -1,15 +1,10 @@
 package net.jackhallam.videocreator;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.View;
-
-import static net.jackhallam.videocreator.ProjectPickerAdapter.REQUEST_VIDEO_CAPTURE;
 
 public class MainActivity extends FragmentActivity {
 
@@ -75,16 +70,16 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
-            Uri videoUri = intent.getData();
-
-            View coordinator = findViewById(R.id.project_outer);
-            Snackbar snackbar = Snackbar.make(coordinator, "Got the video", Snackbar.LENGTH_LONG);
-            snackbar.show();
-            //TODO: do something with the Uri
-        }
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+//        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
+//            Uri videoUri = intent.getData();
+//
+//            View coordinator = findViewById(R.id.project_outer);
+//            Snackbar snackbar = Snackbar.make(coordinator, "Got the video", Snackbar.LENGTH_LONG);
+//            snackbar.show();
+//            //TODO: do something with the Uri
+//        }
+//    }
 
 }
