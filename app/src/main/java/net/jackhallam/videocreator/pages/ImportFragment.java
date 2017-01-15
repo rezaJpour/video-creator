@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import net.jackhallam.videocreator.MainActivity;
 import net.jackhallam.videocreator.ProjectPickerAdapter;
 import net.jackhallam.videocreator.R;
 
@@ -29,7 +30,7 @@ public class ImportFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_import, container, false);
 
         RecyclerView recyclerView = (RecyclerView) inflatedView.findViewById(R.id.recycler_view);
-        ProjectPickerAdapter projectPickerAdapter = new ProjectPickerAdapter(getActivity(), recyclerView);
+        ProjectPickerAdapter projectPickerAdapter = new ProjectPickerAdapter((MainActivity) getActivity(), recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(projectPickerAdapter);
 

@@ -1,6 +1,8 @@
 package net.jackhallam.videocreator;
 
-import android.content.Context;
+import android.content.Intent;
+import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +15,22 @@ import android.view.ViewGroup;
 
 public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public ProjectPickerAdapter(Context context, RecyclerView recyclerView) {
+    private FloatingActionButton fab;
+    static final int REQUEST_VIDEO_CAPTURE  = 1;
+    private RecyclerView mRecyclerView;
 
+    public ProjectPickerAdapter(final MainActivity mainActivity, RecyclerView recyclerView) {
+        mRecyclerView = recyclerView;
+        fab = mainActivity.getFab(2);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                if (intent.resolveActivity(mainActivity.getPackageManager()) != null) {
+                    mainActivity.startActivityForResult(intent, REQUEST_VIDEO_CAPTURE );
+                }
+            }
+        });
     }
 
     @Override

@@ -4,7 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import net.jackhallam.videocreator.pages.CameraFragment;
 import net.jackhallam.videocreator.pages.EditFragment;
 import net.jackhallam.videocreator.pages.ExportFragment;
 import net.jackhallam.videocreator.pages.ImportFragment;
@@ -25,7 +24,6 @@ class MyPagerAdapter extends FragmentPagerAdapter {
         super(fm);
         pages.add(new LoginFragment());
         pages.add(new ImportFragment());
-        pages.add(new CameraFragment());
         pages.add(new EditFragment());
         pages.add(new ExportFragment());
     }
