@@ -16,9 +16,16 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab1);
-        hideDisplayFAB(INITIAL_PAGE, fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        final FloatingActionButton fab1 = (FloatingActionButton) findViewById(R.id.fab1);
+        final FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        hideDisplayFAB(INITIAL_PAGE, fab1, fab2);
+        fab1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO
+            }
+        });
+        fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // TODO
@@ -31,27 +38,31 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                hideDisplayFAB(position, fab);
+                hideDisplayFAB(position, fab1, fab2);
             }
         });
     }
 
-    private void hideDisplayFAB(int position, FloatingActionButton fab) {
+    private void hideDisplayFAB(int position, FloatingActionButton fab1, FloatingActionButton fab2) {
         switch (position) {
             case 0:
-                fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_help_black_48dp));
-                fab.show();
+                fab1.setImageDrawable(getResources().getDrawable(R.drawable.ic_help_black_48dp));
+                fab1.show();
+                fab2.hide();
                 break;
             case 1:
-                fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_48dp));
-                fab.show();
+                fab1.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_48dp));
+                fab1.show();
+                fab2.show();
                 break;
             case 2:
-                fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_settings_black_48dp));
-                fab.show();
+                fab1.setImageDrawable(getResources().getDrawable(R.drawable.ic_settings_black_48dp));
+                fab1.show();
+                fab2.hide();
                 break;
             default:
-                fab.hide();
+                fab1.hide();
+                fab2.hide();
         }
     }
 }
