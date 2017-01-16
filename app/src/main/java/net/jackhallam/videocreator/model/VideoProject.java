@@ -9,6 +9,7 @@ import java.util.List;
 
 public class VideoProject {
     private List<Clip> clips;
+    private String name;
 
     public VideoProject() {
         clips = new ArrayList<>();
@@ -22,8 +23,16 @@ public class VideoProject {
         clips.add(i, clip);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void saveAsVideoFile(Runnable onSuccess, Runnable onFailure) {
-        //TODO: save as a video file and call either onSuccess or onFailure
+        //TODO: save as a video file and call either onSuccess.run() or onFailure.run()
         onSuccess.run();
     }
 

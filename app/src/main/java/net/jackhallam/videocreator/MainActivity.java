@@ -69,17 +69,4 @@ public class MainActivity extends FragmentActivity {
             return fab1;
         }
     }
-
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-//        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
-//            Uri videoUri = intent.getData();
-//
-//            View coordinator = findViewById(R.id.project_outer);
-//            Snackbar snackbar = Snackbar.make(coordinator, "Got the video", Snackbar.LENGTH_LONG);
-//            snackbar.show();
-//            //TODO: do something with the Uri
-//        }
-//    }
-
 }

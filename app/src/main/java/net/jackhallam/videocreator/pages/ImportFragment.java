@@ -1,11 +1,8 @@
 package net.jackhallam.videocreator.pages;
 
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -30,7 +27,7 @@ import static android.app.Activity.RESULT_OK;
  */
 public class ImportFragment extends Fragment {
 
-    static private final int REQUEST_VIDEO_CAPTURE  = 1;
+    private static final int REQUEST_VIDEO_CAPTURE = 1;
     private List<VideoProject> videoProjects = new ArrayList<>(); //TODO: get using firebase
     private MainActivity mainActivity;
 
@@ -47,8 +44,13 @@ public class ImportFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
                 if (intent.resolveActivity(mainActivity.getPackageManager()) != null) {
-                    startActivityForResult(intent, REQUEST_VIDEO_CAPTURE );
+                    startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
                 }
+            }
+        });
+        mainActivity.getFab(1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
             }
         });
     }
