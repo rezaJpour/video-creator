@@ -34,9 +34,9 @@
                 android:src="@drawable/ic_movie_white_48dp" />
 
             <TextView
+                android:id="@+id/project_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="My Untitled Movie"
                 android:layout_gravity="center_vertical"
                 android:textColor="@color/white"
                 android:textSize="32sp" />

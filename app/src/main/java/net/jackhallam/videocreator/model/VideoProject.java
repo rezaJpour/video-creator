@@ -9,7 +9,7 @@ import java.util.List;
 
 public class VideoProject {
     private List<Clip> clips;
-    private String name;
+    private String title;
 
     public VideoProject() {
         clips = new ArrayList<>();
@@ -23,12 +23,12 @@ public class VideoProject {
         clips.add(i, clip);
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public void saveAsVideoFile(Runnable onSuccess, Runnable onFailure) {

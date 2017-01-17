@@ -6,11 +6,18 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
+import net.jackhallam.videocreator.model.VideoProject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends FragmentActivity {
 
     private static final int INITIAL_PAGE = 0;
     private FloatingActionButton fab1;
     private FloatingActionButton fab2;
+
+    private static List<VideoProject> videoProjects = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +49,8 @@ public class MainActivity extends FragmentActivity {
                 hideDisplayFAB(position, fab1, fab2);
             }
         });
+
+        addSampleProject();
     }
 
     private void hideDisplayFAB(int position, FloatingActionButton fab1, FloatingActionButton fab2) {
@@ -62,11 +71,22 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    public FloatingActionButton getFab(int whichFab){
-        if(whichFab == 2){
+    public FloatingActionButton getFab(int whichFab) {
+        if (whichFab == 2) {
             return fab2;
         } else {
             return fab1;
         }
+    }
+
+    //TODO: just a sample
+    private static void addSampleProject() {
+        VideoProject sampleVideoProject = new VideoProject();
+        sampleVideoProject.setTitle("Sample Video Project");
+        videoProjects.add(sampleVideoProject);
+    }
+
+    public static List<VideoProject> getVideoProjects() {
+        return videoProjects;
     }
 }

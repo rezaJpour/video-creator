@@ -1,12 +1,14 @@
 package net.jackhallam.videocreator;
 
-import android.content.Intent;
-import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import net.jackhallam.videocreator.model.VideoProject;
+
+import java.util.List;
 
 
 /**
@@ -15,45 +17,36 @@ import android.view.ViewGroup;
 
 public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private RecyclerView mRecyclerView;
-
-    public ProjectPickerAdapter(final MainActivity mainActivity, RecyclerView recyclerView) {
-        mRecyclerView = recyclerView;
+    public ProjectPickerAdapter() {
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case 0: return new TitleViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.title_project_picker_view, parent, false));
-            case 1: return new ProjectViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.project_picker_view, parent, false));
-            default: return null;
-        }
+        return new ProjectViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.project_picker_view, parent, false));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
+        ProjectViewHolder projectViewHolder = (ProjectViewHolder) holder;
+        projectViewHolder.projectNameTextView.setText(MainActivity.getVideoProjects().get(position).getTitle());
     }
 
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? 0 : 1;
+        return 0;
     }
 
     @Override
     public int getItemCount() {
-        return 20;
+        return MainActivity.getVideoProjects().size();
     }
 
     public class ProjectViewHolder extends RecyclerView.ViewHolder {
+        TextView projectNameTextView;
+
         public ProjectViewHolder(View itemView) {
             super(itemView);
-        }
-    }
-
-    public class TitleViewHolder extends RecyclerView.ViewHolder {
-        public TitleViewHolder(View itemView) {
-            super(itemView);
+            projectNameTextView = (TextView) itemView.findViewById(R.id.project_title);
         }
     }
 }
