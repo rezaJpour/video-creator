@@ -1,10 +1,23 @@
 package net.jackhallam.videocreator;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 /**
  * Created by jackhallam on 12/28/16.
@@ -12,8 +25,12 @@ import android.view.ViewGroup;
 
 public class TimelineAdapter extends RecyclerView.Adapter {
 
-    public TimelineAdapter(Context context, RecyclerView recyclerView) {
+    private Context mContext;
+    public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 52;
+    private ListView mListView;
 
+    public TimelineAdapter(Context context, RecyclerView recyclerView) {
+        mContext = context;
     }
 
     @Override
@@ -53,6 +70,64 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     public class AddViewHolder extends RecyclerView.ViewHolder {
         public AddViewHolder(View itemView) {
             super(itemView);
+            itemView.findViewById(R.id.add_video).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setTitle(R.string.choose_video);
+
+                    View vw = LayoutInflater.from(mContext).inflate(R.layout.video_list_view,null,false);
+                    mListView = (ListView) vw.findViewById(R.id.list_view);
+                    String[] projection = { MediaStore.Video.Media._ID};
+                    Cursor cursor = null;
+                    if(ContextCompat.checkSelfPermission(mContext,android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions((Activity)mContext,
+                                new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                    } else {
+                        cursor = new CursorLoader(mContext, MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection,
+                                null, // Return all rows
+                                null, null).loadInBackground();
+                        finishMakingView(cursor);
+                    }
+                    builder.setView(vw);
+                    builder.create().show();
+                }
+            });
         }
+    }
+    public void finishMakingView(final Cursor cursor){
+        Log.d("FINISH", "Made it");
+        mListView.setAdapter(new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return cursor.getCount();
+            }
+
+            @Override
+            public Object getItem(int i) {
+                return null;
+            }
+
+            @Override
+            public long getItemId(int i) {
+                return 0;
+            }
+
+            @Override
+            public View getView(int i, View contentView, ViewGroup parent) {
+                View v = null;
+                if(contentView == null){
+                    v = LayoutInflater.from(mContext).inflate(R.layout.video_view,parent,false);
+                }else{
+                    v = contentView;
+                }
+                ImageView iv = (ImageView) v.findViewById(R.id.thumbnail);
+                TextView tv = (TextView) v.findViewById(R.id.video_path);
+                cursor.moveToPosition(i);
+                tv.setText(cursor.getString(0));
+                return v;
+            }
+        });
     }
 }
