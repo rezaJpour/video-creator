@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "600023455254",
+    "firebase_url": "https://video-creator-1a177.firebaseio.com",
+    "project_id": "video-creator-1a177",
+    "storage_bucket": "video-creator-1a177.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:600023455254:android:4259a417dcf050a4",
+        "android_client_info": {
+          "package_name": "net.jackhallam.videocreator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "600023455254-iaop1ikqtugp306pt0u4i9mjntkurqck.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBP-U6nWrh-UOS59kdasEXgq-oSCpnE5mI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
