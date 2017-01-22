@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TableRow;
 
 import net.jackhallam.videocreator.MainActivity;
 import net.jackhallam.videocreator.ProjectPickerAdapter;
@@ -112,12 +113,14 @@ public class ImportFragment extends Fragment {
             @Override
             public void onShow(DialogInterface dialogInterface) {
                 try {
-                    int fortyEightDP = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 72, getResources().getDisplayMetrics());
+                    int fortyEightDP = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
 
-                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setWidth(fortyEightDP);
-                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setHeight(fortyEightDP);
-                    alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setWidth(fortyEightDP);
-                    alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setHeight(fortyEightDP);
+                    TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(fortyEightDP, fortyEightDP);
+
+                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setLayoutParams(layoutParams);
+
+                    alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setLayoutParams(layoutParams);
+
                     alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setBackgroundResource(R.drawable.ic_check_white_48dp);
                     alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setBackgroundResource(R.drawable.ic_close_white_48dp);
 
