@@ -2,7 +2,6 @@ package net.jackhallam.videocreator.pages;
 
 
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -45,10 +44,10 @@ public class EditFragment extends Fragment {
             case TimelineAdapter.MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    String[] projection = { MediaStore.Video.Media._ID};
-                    Cursor cursor = new CursorLoader(getContext(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection,
+                    String[] projection = { MediaStore.Video.Thumbnails.DATA};
+                    CursorLoader cursor = new CursorLoader(getContext(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection,
                             null, // Return all rows
-                            null, null).loadInBackground();
+                            null, null);
                     mTimelineAdapter.finishMakingView(cursor);
                 } else {
 

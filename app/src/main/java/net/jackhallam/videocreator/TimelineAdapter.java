@@ -4,13 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.media.ThumbnailUtils;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,8 +80,8 @@ public class TimelineAdapter extends RecyclerView.Adapter {
 
                     View vw = LayoutInflater.from(mContext).inflate(R.layout.video_list_view,null,false);
                     mListView = (ListView) vw.findViewById(R.id.list_view);
-                    String[] projection = { MediaStore.Video.Media._ID};
-                    Cursor cursor = null;
+                    String[] projection = { MediaStore.Video.Thumbnails.DATA};
+                    CursorLoader cursor = null;
                     if(ContextCompat.checkSelfPermission(mContext,android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
                         ActivityCompat.requestPermissions((Activity)mContext,
                                 new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -87,7 +89,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                     } else {
                         cursor = new CursorLoader(mContext, MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection,
                                 null, // Return all rows
-                                null, null).loadInBackground();
+                                null, null);
                         finishMakingView(cursor);
                     }
                     builder.setView(vw);
@@ -96,8 +98,8 @@ public class TimelineAdapter extends RecyclerView.Adapter {
             });
         }
     }
-    public void finishMakingView(final Cursor cursor){
-        Log.d("FINISH", "Made it");
+    public void finishMakingView(final CursorLoader cursorL){
+        final Cursor cursor = cursorL.loadInBackground();
         mListView.setAdapter(new BaseAdapter() {
             @Override
             public int getCount() {
@@ -124,8 +126,22 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                 }
                 ImageView iv = (ImageView) v.findViewById(R.id.thumbnail);
                 TextView tv = (TextView) v.findViewById(R.id.video_path);
-                cursor.moveToPosition(i);
-                tv.setText(cursor.getString(0));
+                cursor.moveToPosition(cursor.getCount()-1-i);
+                String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                //use one of overloaded setDataSource() functions to set your data source
+                retriever.setDataSource(filePath);
+                String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                double timeInMillisec = Long.parseLong(time );
+                timeInMillisec=timeInMillisec/1000.0;
+                tv.setText(timeInMillisec+"");
+                Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
+                if(bm.getWidth()>bm.getHeight()){
+                    bm = Bitmap.createBitmap(bm, 600, 0, 600, 600);
+                } else {
+                    bm = Bitmap.createBitmap(bm, 0, 0, 600, 600);
+                }
+                iv.setImageBitmap(bm);
                 return v;
             }
         });
