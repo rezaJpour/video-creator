@@ -41,7 +41,7 @@ public class MainActivity extends FragmentActivity {
         });
 
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
-        MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+        MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), pager);
         pager.setAdapter(myPagerAdapter);
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override

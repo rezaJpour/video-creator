@@ -3,6 +3,7 @@ package net.jackhallam.videocreator;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 
 import net.jackhallam.videocreator.pages.EditFragment;
 import net.jackhallam.videocreator.pages.ExportFragment;
@@ -16,14 +17,19 @@ import java.util.List;
  * Created by jackhallam on 12/24/16.
  */
 
-class MyPagerAdapter extends FragmentPagerAdapter {
+public class MyPagerAdapter extends FragmentPagerAdapter {
 
     private List<Fragment> pages = new ArrayList<>();
 
-    MyPagerAdapter(FragmentManager fm) {
+
+    private ImportFragment importFragment;
+
+    MyPagerAdapter(FragmentManager fm, ViewPager viewPager) {
         super(fm);
         pages.add(new LoginFragment());
-        pages.add(new ImportFragment());
+        importFragment = new ImportFragment();
+        importFragment.setPager(viewPager);
+        pages.add(importFragment);
         pages.add(new EditFragment());
         pages.add(new ExportFragment());
     }
