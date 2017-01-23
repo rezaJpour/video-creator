@@ -4,14 +4,21 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <!--<TextView-->
+        <!--android:layout_width="150dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_margin="6dp"-->
+        <!--android:background="@color/colorPrimaryDark"-->
+        <!--android:text="VIDEO HERE"-->
+        <!--android:textAlignment="center"-->
+        <!--android:textColor="@color/white" />-->
+
+    <ImageView
+        android:id="@+id/videoHolder"
         android:layout_width="150dp"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_margin="6dp"
-        android:background="@color/colorPrimaryDark"
-        android:text="VIDEO HERE"
-        android:textAlignment="center"
-        android:textColor="@color/white" />
+        android:layout_margin="6dp"/>
 
 </LinearLayout>

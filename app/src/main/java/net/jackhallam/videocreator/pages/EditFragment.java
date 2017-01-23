@@ -48,7 +48,7 @@ public class EditFragment extends Fragment {
                     CursorLoader cursor = new CursorLoader(getContext(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection,
                             null, // Return all rows
                             null, null);
-                    mTimelineAdapter.finishMakingView(cursor);
+                    mTimelineAdapter.finishMakingView(cursor,0,mTimelineAdapter);
                 } else {
 
                     // permission denied, boo! Disable the
