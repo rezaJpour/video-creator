@@ -136,11 +136,11 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                 timeInMillisec=timeInMillisec/1000.0;
                 tv.setText(timeInMillisec+"");
                 Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
-                if(bm.getWidth()>bm.getHeight()){
-                    bm = Bitmap.createBitmap(bm, 600, 0, 600, 600);
-                } else {
-                    bm = Bitmap.createBitmap(bm, 0, 0, 600, 600);
-                }
+                //if(bm.getWidth()>bm.getHeight()){
+                //    bm = Bitmap.createBitmap(bm, 0, 0, 200, 200);
+                //} else {
+                //    bm = Bitmap.createBitmap(bm, 0, 0, 200, 200);
+                //}
                 iv.setImageBitmap(bm);
                 return v;
             }

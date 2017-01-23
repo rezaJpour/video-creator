@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import android.widget.EditText;
 import android.widget.TableRow;
 
 import net.jackhallam.videocreator.MainActivity;
+import net.jackhallam.videocreator.MyPagerAdapter;
 import net.jackhallam.videocreator.ProjectPickerAdapter;
 import net.jackhallam.videocreator.R;
 import net.jackhallam.videocreator.model.VideoProject;
@@ -37,10 +39,10 @@ public class ImportFragment extends Fragment {
     private MainActivity mainActivity;
 
     private ProjectPickerAdapter projectPickerAdapter;
+    private ViewPager pager;
 
     public ImportFragment() {
         // Required empty public constructor
-
         projectPickerAdapter = new ProjectPickerAdapter();
     }
 
@@ -134,5 +136,9 @@ public class ImportFragment extends Fragment {
             }
         });
         alertDialog.show();
+    }
+
+    public void setPager(ViewPager pager) {
+        projectPickerAdapter.setPager(pager);
     }
 }
