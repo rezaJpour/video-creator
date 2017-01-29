@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,7 +20,7 @@ import java.util.List;
  * Created by laeschjs on 1/22/2017.
  */
 
-public class VideoPickerAdapter extends BaseAdapter {
+public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.ViewHolder> {
 
 //    private Bitmap bm;
     private Cursor cursor;
@@ -41,31 +40,16 @@ public class VideoPickerAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return cursor.getCount();
+    public VideoPickerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.video_view, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public Object getItem(int i) {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return 0;
-    }
-
-    @Override
-    public View getView(int i, View contentView, ViewGroup parent) {
-        View v = null;
-        if(contentView == null){
-            v = LayoutInflater.from(mContext).inflate(R.layout.video_view,parent,false);
-        }else{
-            v = contentView;
-        }
-        ImageView iv = (ImageView) v.findViewById(R.id.thumbnail);
-        TextView tv = (TextView) v.findViewById(R.id.video_path);
-        cursor.moveToPosition(cursor.getCount()-1-i);
+    public void onBindViewHolder(VideoPickerAdapter.ViewHolder holder, int position) {
+        ImageView iv = holder.image;
+        TextView tv = holder.time;
+        cursor.moveToPosition(cursor.getCount()-1-position);
         String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         //use one of overloaded setDataSource() functions to set your data source
@@ -76,13 +60,13 @@ public class VideoPickerAdapter extends BaseAdapter {
         tv.setText(timeInMillisec+"");
         Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
         if(bm.getWidth()>bm.getHeight()){
-            bm = Bitmap.createBitmap(bm, 600, 0, 600, 600);
+            bm = Bitmap.createBitmap(bm, 0, 0, bm.getHeight(), bm.getHeight());
         } else {
-            bm = Bitmap.createBitmap(bm, 0, 0, 600, 600);
+            bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getWidth());
         }
         iv.setImageBitmap(bm);
         final Bitmap finalBm = bm;
-        v.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 videoList.add(index, finalBm);
@@ -90,6 +74,65 @@ public class VideoPickerAdapter extends BaseAdapter {
                 ad.dismiss();
             }
         });
-        return v;
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return 0;
+    }
+
+    @Override
+    public int getItemCount() {
+        return cursor.getCount();
+    }
+
+//    @Override
+//    public View getView(int i, View contentView, ViewGroup parent) {
+//        View v = null;
+//        if(contentView == null){
+//            v = LayoutInflater.from(mContext).inflate(R.layout.video_view,parent,false);
+//        }else{
+//            v = contentView;
+//        }
+//        ImageView iv = (ImageView) v.findViewById(R.id.thumbnail);
+//        TextView tv = (TextView) v.findViewById(R.id.video_path);
+//        cursor.moveToPosition(cursor.getCount()-1-i);
+//        String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
+//        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//        //use one of overloaded setDataSource() functions to set your data source
+//        retriever.setDataSource(filePath);
+//        String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+//        double timeInMillisec = Long.parseLong(time );
+//        timeInMillisec=timeInMillisec/1000.0;
+//        tv.setText(timeInMillisec+"");
+//        Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
+//        if(bm.getWidth()>bm.getHeight()){
+//            bm = Bitmap.createBitmap(bm, 0, 0, bm.getHeight(), bm.getHeight());
+//        } else {
+//            bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getWidth());
+//        }
+//        iv.setImageBitmap(bm);
+//        final Bitmap finalBm = bm;
+//        v.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                videoList.add(index, finalBm);
+//                adap.notifyDataSetChanged();
+//                ad.dismiss();
+//            }
+//        });
+//        return v;
+//    }
+
+    public class ViewHolder  extends RecyclerView.ViewHolder{
+
+        private ImageView image;
+        private TextView time;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            image = (ImageView) itemView.findViewById(R.id.thumbnail);
+            time = (TextView) itemView.findViewById(R.id.video_path);
+        }
     }
 }
