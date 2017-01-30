@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -14,6 +15,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +38,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     private List<Bitmap> videoList;
     private List<VideoThumbnail> deviceVideos;
     private Cursor cursor;
+    private VideoPickerAdapter vpAdapter;
 
     public TimelineAdapter(Context context, RecyclerView recyclerView) {
         mContext = context;
@@ -54,32 +57,76 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                     null, // Return all rows
                     null, null);
             cursor=cursorL.loadInBackground();
-            while(cursorL.isStarted()) {}
-            populateVideos();
+            new MyAsync().execute(null, null, null);
+        }
+    }
+
+    private class MyAsync extends AsyncTask<Void, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            int size = cursor.getCount();
+            for (int i = 0; i < size; i++) {
+                cursor.moveToPosition(size - i - 1);
+                String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                //use one of overloaded setDataSource() functions to set your data source
+                retriever.setDataSource(filePath);
+                String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                double timeInMillisec = Long.parseLong(time);
+                int sec = (int) (timeInMillisec / 1000) % 60;
+                int minutes = (int) ((timeInMillisec / (1000 * 60)) % 60);
+                int milli = (int) (timeInMillisec % 1000);
+                Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
+                if (bm.getWidth() > bm.getHeight()) {
+                    bm = Bitmap.createBitmap(bm, 0, 0, bm.getHeight(), bm.getHeight());
+                } else {
+                    bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getWidth());
+                }
+                deviceVideos.add(new VideoThumbnail(bm, minutes, sec, milli));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v){
+            if(vpAdapter!=null){
+                Log.d("TIMELINE", "NOT null");
+                vpAdapter.notifyDataSetChanged();
+            }
         }
     }
 
     public void populateVideos(){
-        int size = cursor.getCount();
-        for(int i = 0; i < size; i++){
-            cursor.moveToPosition(size-i-1);
-            String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            //use one of overloaded setDataSource() functions to set your data source
-            retriever.setDataSource(filePath);
-            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            double timeInMillisec = Long.parseLong(time );
-            int sec = (int) (timeInMillisec / 1000) % 60;
-            int minutes = (int) ((timeInMillisec / (1000*60)) % 60);
-            int milli = (int) (timeInMillisec %1000);
-            Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
-            if(bm.getWidth()>bm.getHeight()){
-                bm = Bitmap.createBitmap(bm, 0, 0, bm.getHeight(), bm.getHeight());
-            } else {
-                bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getWidth());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int size = cursor.getCount();
+                for (int i = 0; i < size; i++) {
+                    cursor.moveToPosition(size - i - 1);
+                    String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
+                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                    //use one of overloaded setDataSource() functions to set your data source
+                    retriever.setDataSource(filePath);
+                    String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                    double timeInMillisec = Long.parseLong(time);
+                    int sec = (int) (timeInMillisec / 1000) % 60;
+                    int minutes = (int) ((timeInMillisec / (1000 * 60)) % 60);
+                    int milli = (int) (timeInMillisec % 1000);
+                    Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
+                    if (bm.getWidth() > bm.getHeight()) {
+                        bm = Bitmap.createBitmap(bm, 0, 0, bm.getHeight(), bm.getHeight());
+                    } else {
+                        bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getWidth());
+                    }
+                    deviceVideos.add(new VideoThumbnail(bm, minutes, sec, milli));
+                }
+                if(vpAdapter!=null){
+                    Log.d("TIMELINE", "NOT null");
+                    vpAdapter.notifyDataSetChanged();
+                }
             }
-            deviceVideos.add(new VideoThumbnail(bm, minutes, sec, milli));
-        }
+        }).start();
     }
 
     @Override
@@ -138,7 +185,8 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                     final AlertDialog ad = builder.create();
 
                     mListView.setLayoutManager(new GridLayoutManager(mContext, 2));
-                    mListView.setAdapter(new VideoPickerAdapter(position, mContext, ad, videoList, recAdap, deviceVideos));
+                    vpAdapter=new VideoPickerAdapter(position, mContext, ad, videoList, recAdap, deviceVideos);
+                    mListView.setAdapter(vpAdapter);
                     mListView.setHasFixedSize(true);//purely for speed
                     ad.show();
                 }
