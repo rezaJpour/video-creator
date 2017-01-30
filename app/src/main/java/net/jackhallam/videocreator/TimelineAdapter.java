@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.media.ThumbnailUtils;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -16,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import net.jackhallam.videocreator.model.VideoThumbnail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +34,13 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 52;
     private RecyclerView mListView;
     private List<Bitmap> videoList;
+    private List<VideoThumbnail> deviceVideos;
     private Cursor cursor;
 
     public TimelineAdapter(Context context, RecyclerView recyclerView) {
         mContext = context;
         videoList = new ArrayList<>();
+        deviceVideos=new ArrayList<>();
         if(ContextCompat.checkSelfPermission(mContext,android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions((Activity)mContext,
                     new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -44,9 +50,35 @@ public class TimelineAdapter extends RecyclerView.Adapter {
             String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                     + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
             String[] projection = { MediaStore.Video.Thumbnails.DATA};
-            cursor = new CursorLoader(mContext, MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection,
+            CursorLoader cursorL = new CursorLoader(mContext, MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection,
                     null, // Return all rows
-                    null, null).loadInBackground();
+                    null, null);
+            cursor=cursorL.loadInBackground();
+            while(cursorL.isStarted()) {}
+            populateVideos();
+        }
+    }
+
+    public void populateVideos(){
+        int size = cursor.getCount();
+        for(int i = 0; i < size; i++){
+            cursor.moveToPosition(size-i-1);
+            String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            //use one of overloaded setDataSource() functions to set your data source
+            retriever.setDataSource(filePath);
+            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            double timeInMillisec = Long.parseLong(time );
+            int sec = (int) (timeInMillisec / 1000) % 60;
+            int minutes = (int) ((timeInMillisec / (1000*60)) % 60);
+            int milli = (int) (timeInMillisec %1000);
+            Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
+            if(bm.getWidth()>bm.getHeight()){
+                bm = Bitmap.createBitmap(bm, 0, 0, bm.getHeight(), bm.getHeight());
+            } else {
+                bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getWidth());
+            }
+            deviceVideos.add(new VideoThumbnail(bm, minutes, sec, milli));
         }
     }
 
@@ -97,18 +129,18 @@ public class TimelineAdapter extends RecyclerView.Adapter {
             itemView.findViewById(R.id.add_video).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle(R.string.choose_video);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setTitle(R.string.choose_video);
 
-                View vw = LayoutInflater.from(mContext).inflate(R.layout.video_list_view,null,false);
-                mListView = (RecyclerView) vw.findViewById(R.id.list_view);
-                builder.setView(vw);
-                final AlertDialog ad = builder.create();
+                    View vw = LayoutInflater.from(mContext).inflate(R.layout.video_list_view,null,false);
+                    mListView = (RecyclerView) vw.findViewById(R.id.list_view);
+                    builder.setView(vw);
+                    final AlertDialog ad = builder.create();
 
-                mListView.setLayoutManager(new GridLayoutManager(mContext, 2));
-                mListView.setHasFixedSize(true);//purely for speed
-                mListView.setAdapter(new VideoPickerAdapter(cursor, position, mContext, ad, videoList, recAdap));
-                ad.show();
+                    mListView.setLayoutManager(new GridLayoutManager(mContext, 2));
+                    mListView.setAdapter(new VideoPickerAdapter(position, mContext, ad, videoList, recAdap, deviceVideos));
+                    mListView.setHasFixedSize(true);//purely for speed
+                    ad.show();
                 }
             });
         }

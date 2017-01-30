@@ -46,10 +46,13 @@ public class EditFragment extends Fragment {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     String[] projection = { MediaStore.Video.Thumbnails.DATA};
-                    Cursor cursor = new CursorLoader(getContext(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection,
+                    CursorLoader cursorL = new CursorLoader(getContext(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection,
                             null, // Return all rows
-                            null, null).loadInBackground();
+                            null, null);
+                    Cursor cursor=cursorL.loadInBackground();
+                    while(cursorL.isStarted()) {}
                     mTimelineAdapter.setCursor(cursor);
+                    mTimelineAdapter.populateVideos();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.

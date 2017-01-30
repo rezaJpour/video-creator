@@ -1,11 +1,7 @@
 package net.jackhallam.videocreator;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
-import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import net.jackhallam.videocreator.model.VideoThumbnail;
 
 import java.util.List;
 
@@ -23,20 +21,21 @@ import java.util.List;
 public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.ViewHolder> {
 
 //    private Bitmap bm;
-    private Cursor cursor;
+//    private Cursor cursor;
     private int index;
     private Context mContext;
     private AlertDialog ad;
     private List<Bitmap> videoList;
     private RecyclerView.Adapter adap;
+    private List<VideoThumbnail> deviceVideos;
 
-    public VideoPickerAdapter(Cursor c, int location, Context con, AlertDialog alert, List<Bitmap> li, RecyclerView.Adapter ra){
-        cursor = c;
+    public VideoPickerAdapter(int location, Context con, AlertDialog alert, List<Bitmap> li, RecyclerView.Adapter ra, List<VideoThumbnail> videosOnDevice){
         index = location;
         mContext = con;
         ad = alert;
         videoList = li;
         adap = ra;
+        deviceVideos = videosOnDevice;
     }
 
     @Override
@@ -49,21 +48,14 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
     public void onBindViewHolder(VideoPickerAdapter.ViewHolder holder, int position) {
         ImageView iv = holder.image;
         TextView tv = holder.time;
-        cursor.moveToPosition(cursor.getCount()-1-position);
-        String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        //use one of overloaded setDataSource() functions to set your data source
-        retriever.setDataSource(filePath);
-        String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-        double timeInMillisec = Long.parseLong(time );
-        timeInMillisec=timeInMillisec/1000.0;
-        tv.setText(timeInMillisec+"");
-        Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
-        if(bm.getWidth()>bm.getHeight()){
-            bm = Bitmap.createBitmap(bm, 0, 0, bm.getHeight(), bm.getHeight());
-        } else {
-            bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getWidth());
-        }
+        VideoThumbnail myVideo= deviceVideos.get(position);
+
+        int min = myVideo.getMins();
+        int sec = myVideo.getSecs();
+        int mil = myVideo.getMilli();
+        tv.setText(min + ":" + sec + "." + mil);
+
+        Bitmap bm = myVideo.getBitmap();
         iv.setImageBitmap(bm);
         final Bitmap finalBm = bm;
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +75,7 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
 
     @Override
     public int getItemCount() {
-        return cursor.getCount();
+        return deviceVideos.size();
     }
 
 //    @Override
