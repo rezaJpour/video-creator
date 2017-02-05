@@ -57,8 +57,12 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                     null, // Return all rows
                     null, null);
             cursor=cursorL.loadInBackground();
-            new MyAsync().execute(null, null, null);
+            startAsync();
         }
+    }
+
+    public void startAsync(){
+        new MyAsync().execute(null, null, null);
     }
 
     private class MyAsync extends AsyncTask<Void, Void, Void>{
@@ -97,38 +101,6 @@ public class TimelineAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void populateVideos(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int size = cursor.getCount();
-                for (int i = 0; i < size; i++) {
-                    cursor.moveToPosition(size - i - 1);
-                    String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
-                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                    //use one of overloaded setDataSource() functions to set your data source
-                    retriever.setDataSource(filePath);
-                    String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                    double timeInMillisec = Long.parseLong(time);
-                    int sec = (int) (timeInMillisec / 1000) % 60;
-                    int minutes = (int) ((timeInMillisec / (1000 * 60)) % 60);
-                    int milli = (int) (timeInMillisec % 1000);
-                    Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
-                    if (bm.getWidth() > bm.getHeight()) {
-                        bm = Bitmap.createBitmap(bm, 0, 0, bm.getHeight(), bm.getHeight());
-                    } else {
-                        bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getWidth());
-                    }
-                    deviceVideos.add(new VideoThumbnail(bm, minutes, sec, milli));
-                }
-                if(vpAdapter!=null){
-                    Log.d("TIMELINE", "NOT null");
-                    vpAdapter.notifyDataSetChanged();
-                }
-            }
-        }).start();
-    }
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType%2) {
@@ -142,10 +114,18 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if(position%2==1){
             VideoViewHolder holder1 = (VideoViewHolder)holder;
-            holder1.setImage(position);
+            holder1.video.setImageBitmap(videoList.get((int)Math.floor(position/2)));
+            holder1.video.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    videoList.remove((int) Math.floor(position/2));
+                    notifyDataSetChanged();
+                    return true;
+                }
+            });
         }
     }
 
@@ -161,12 +141,10 @@ public class TimelineAdapter extends RecyclerView.Adapter {
 
 
     public class VideoViewHolder extends RecyclerView.ViewHolder {
+        public ImageView video;
         public VideoViewHolder(View itemView) {
             super(itemView);
-        }
-        public void setImage(int position){
-            ImageView video = (ImageView) itemView.findViewById(R.id.videoHolder);
-            video.setImageBitmap(videoList.get((int)Math.floor(position/2)));
+            video = (ImageView) itemView.findViewById(R.id.videoHolder);
         }
     }
 
@@ -197,19 +175,5 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     public void setCursor(Cursor c){
         cursor = c;
     }
-//
-//    public void finishMakingView(final int index, RecyclerView.Adapter ra){
-//        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-//        builder.setTitle(R.string.choose_video);
-//
-//        View vw = LayoutInflater.from(mContext).inflate(R.layout.video_list_view,null,false);
-//        mListView = (RecyclerView) vw.findViewById(R.id.list_view);
-//        builder.setView(vw);
-//        final AlertDialog ad = builder.create();
-//
-//        mListView.setLayoutManager(new GridLayoutManager(mContext, 2));
-//        mListView.setHasFixedSize(true);//purely for speed
-//        mListView.setAdapter(new VideoPickerAdapter(cursor, index, mContext, ad, videoList, ra));
-//        ad.show();
-//    }
+
 }

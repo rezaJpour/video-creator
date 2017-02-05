@@ -53,9 +53,8 @@ public class EditFragment extends Fragment {
                             null, // Return all rows
                             null, null);
                     Cursor cursor=cursorL.loadInBackground();
-                    while(cursorL.isStarted()) {}
                     mTimelineAdapter.setCursor(cursor);
-                    mTimelineAdapter.populateVideos();
+                    mTimelineAdapter.startAsync();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
