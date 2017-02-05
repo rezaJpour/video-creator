@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import net.jackhallam.videocreator.MainActivity;
 import net.jackhallam.videocreator.R;
-import net.jackhallam.videocreator.User;
 
 
 /**
@@ -44,8 +43,8 @@ public class LoginFragment extends Fragment {
         logInView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: also log out
-                User.getInstance().logIn(mainActivity);
+                //TODO: handle log out and auto sign in
+                mainActivity.startGoogleSignIn();
             }
         });
         return view;

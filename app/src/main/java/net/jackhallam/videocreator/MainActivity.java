@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.auth.api.Auth;
@@ -30,22 +30,23 @@ import java.util.List;
 
 public class MainActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
 
+    // Constants
     private static final int RC_GOOGLE_LOGIN = 1;
     private static final int INITIAL_PAGE = 0;
+
+    // Model
+    private static List<VideoProject> videoProjects = new ArrayList<>();
+
+    // View
     private FloatingActionButton fab1;
     private FloatingActionButton fab2;
 
-    private static List<VideoProject> videoProjects = new ArrayList<>();
-
+    // Sign In
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
-    private OnCompleteListener<AuthResult> onCompleteListener;
-
-    public GoogleApiClient getGoogleApiClient() {
-        return googleApiClient;
-    }
-
+    private OnCompleteListener<AuthResult> onFireBaseSignInCompleteListener;
     private GoogleApiClient googleApiClient;
+    private FirebaseUser firebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,18 +56,6 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
         fab1 = (FloatingActionButton) findViewById(R.id.fab1);
         fab2 = (FloatingActionButton) findViewById(R.id.fab2);
         hideDisplayFAB(INITIAL_PAGE, fab1, fab2);
-        fab1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO
-            }
-        });
-        fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO
-            }
-        });
 
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), pager);
@@ -79,35 +68,96 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
             }
         });
 
-        addSampleProject();
-
         firebaseAuth = FirebaseAuth.getInstance();
-        initializeListeners();
+        initializeSignInListeners();
         setupGoogleSignIn();
     }
 
-    private void initializeListeners() {
+    // ---------------------------------------
+    //
+    // Model
+    //
+    // ---------------------------------------
+
+    public static List<VideoProject> getVideoProjects() {
+        return videoProjects;
+    }
+
+    // ---------------------------------------
+    //
+    // Controller
+    //
+    // ---------------------------------------
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authStateListener != null)
+            firebaseAuth.removeAuthStateListener(authStateListener);
+    }
+
+    // ---------------------------------------
+    //
+    // View
+    //
+    // ---------------------------------------
+
+    private void hideDisplayFAB(int position, FloatingActionButton fab1, FloatingActionButton fab2) {
+        switch (position) {
+            case 0:
+                fab1.setImageDrawable(getResources().getDrawable(R.drawable.ic_help_black_48dp));
+                fab1.show();
+                fab2.hide();
+                break;
+            case 1:
+                fab1.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_48dp));
+                fab1.show();
+                fab2.show();
+                break;
+            default:
+                fab2.setVisibility(View.INVISIBLE); // Smoother Transition
+                fab1.hide();
+                fab2.hide();
+        }
+    }
+
+    public FloatingActionButton getFab(int whichFab) {
+        return whichFab == 1 ? fab1 : fab2;
+    }
+
+    // ---------------------------------------
+    //
+    // Sign In
+    //
+    // ---------------------------------------
+
+    public void startGoogleSignIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+        startActivityForResult(signInIntent, RC_GOOGLE_LOGIN);
+    }
+
+    private void initializeSignInListeners() {
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // Logged in
-                    Log.d("videocreator", "USER: "+user.getDisplayName());
-                } else {
-                    //Not logged in
-                    Log.d("videocreator", "not logged in");
-                }
+                firebaseUser = firebaseAuth.getCurrentUser();
+                if (firebaseUser != null)
+                    userLoggedIn();
+                else
+                    userLoggedOut();
             }
         };
-        onCompleteListener = new OnCompleteListener<AuthResult>() {
+        onFireBaseSignInCompleteListener = new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task task) {
-                if (!task.isSuccessful()) {
-                    //TODO: show error
-                    Log.d("videocreator", "error");
-                }
-                Log.d("videocreator", "not error");
+                if (!task.isSuccessful())
+                    showError("Could not sign into Google with FireBase");
             }
         };
     }
@@ -124,83 +174,46 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
                 .build();
     }
 
-    private void hideDisplayFAB(int position, FloatingActionButton fab1, FloatingActionButton fab2) {
-        switch (position) {
-            case 0:
-                fab1.setImageDrawable(getResources().getDrawable(R.drawable.ic_help_black_48dp));
-                fab1.show();
-                fab2.hide();
-                break;
-            case 1:
-                fab1.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_48dp));
-                fab1.show();
-                fab2.show();
-                break;
-            default:
-                fab1.hide();
-                fab2.hide();
-        }
-    }
-
-    public FloatingActionButton getFab(int whichFab) {
-        if (whichFab == 2) {
-            return fab2;
-        } else {
-            return fab1;
-        }
-    }
-
-    //TODO: just a sample
-    private static void addSampleProject() {
-        VideoProject sampleVideoProject = new VideoProject();
-        sampleVideoProject.setTitle("Sample Video Project");
-        videoProjects.add(sampleVideoProject);
-    }
-
-    public static List<VideoProject> getVideoProjects() {
-        return videoProjects;
-    }
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        //TODO
-        Log.d("videocreator", "error");
+        showError(connectionResult.getErrorMessage());
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_GOOGLE_LOGIN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = result.getSignInAccount();
-                firebaseAuthWithGoogle(account);
+            GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (googleSignInResult.isSuccess()) {
+                fireBaseAuthWithGoogle(googleSignInResult.getSignInAccount());
             } else {
-                //TODO: show error
-                Log.d("videocreator", "error");
+                showError("Invalid Google Log In");
             }
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+    private void fireBaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, onCompleteListener);
+        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, onFireBaseSignInCompleteListener);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        firebaseAuth.addAuthStateListener(authStateListener);
+    private void userLoggedIn() {
+        //TODO: update fragments, etc.
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (authStateListener != null)
-            firebaseAuth.removeAuthStateListener(authStateListener);
+    private void userLoggedOut() {
+        //TODO: update fragments, etc.
     }
+
+    // ---------------------------------------
+    //
+    // Misc.
+    //
+    // ---------------------------------------
+
+    private void showError(String error) {
+        Snackbar.make(findViewById(R.id.project_outer), error, Snackbar.LENGTH_LONG).show();
+    }
+
 }
