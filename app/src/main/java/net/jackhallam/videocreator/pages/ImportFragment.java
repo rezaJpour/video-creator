@@ -39,7 +39,6 @@ public class ImportFragment extends Fragment {
     private MainActivity mainActivity;
 
     private ProjectPickerAdapter projectPickerAdapter;
-    private ViewPager pager;
 
     public ImportFragment() {
         // Required empty public constructor
@@ -136,9 +135,5 @@ public class ImportFragment extends Fragment {
             }
         });
         alertDialog.show();
-    }
-
-    public void setPager(ViewPager pager) {
-        projectPickerAdapter.setPager(pager);
     }
 }

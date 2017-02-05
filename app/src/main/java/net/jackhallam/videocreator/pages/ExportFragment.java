@@ -3,6 +3,7 @@ package net.jackhallam.videocreator.pages;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import net.jackhallam.videocreator.MainActivity;
 import net.jackhallam.videocreator.R;
 
 import java.io.InputStream;
@@ -26,6 +28,8 @@ public class ExportFragment extends Fragment {
 
     private ImageView saveImageView;
     private ImageView uploadImageView;
+
+    private MainActivity mainActivity;
 
     public ExportFragment() {
         // Required empty public constructor
@@ -108,5 +112,11 @@ public class ExportFragment extends Fragment {
             snackbar.show();
             uploadImageView.setColorFilter(ContextCompat.getColor(view.getContext(), R.color.colorAccent));
         }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mainActivity = (MainActivity) getActivity();
     }
 }

@@ -40,6 +40,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     private FloatingActionButton fab1;
     private FloatingActionButton fab2;
     ViewPager viewPager;
+    MyPagerAdapter myPagerAdapter;
 
     // Sign In
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -117,7 +118,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
 
     private void setUpViewPager() {
         viewPager = (ViewPager) findViewById(R.id.viewPager);
-        MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), viewPager);
+        myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(myPagerAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override

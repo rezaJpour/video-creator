@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import net.jackhallam.videocreator.MainActivity;
 import net.jackhallam.videocreator.R;
 import net.jackhallam.videocreator.TimelineAdapter;
 
@@ -21,6 +23,7 @@ import net.jackhallam.videocreator.TimelineAdapter;
 public class EditFragment extends Fragment {
 
     private TimelineAdapter mTimelineAdapter;
+    private MainActivity mainActivity;
 
     public EditFragment() {
         // Required empty public constructor
@@ -62,4 +65,9 @@ public class EditFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mainActivity = (MainActivity) getActivity();
+    }
 }

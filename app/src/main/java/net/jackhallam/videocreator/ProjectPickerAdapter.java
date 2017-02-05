@@ -18,8 +18,6 @@ import java.util.List;
 
 public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    ViewPager pager;
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ProjectViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.project_picker_view, parent, false));
@@ -32,7 +30,7 @@ public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.View
         projectViewHolder.projectLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pager.setCurrentItem(pager.getCurrentItem() + 1);
+
             }
         });
     }
@@ -56,9 +54,5 @@ public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.View
             projectNameTextView = (TextView) itemView.findViewById(R.id.project_title);
             projectLayout = itemView.findViewById(R.id.project_layout);
         }
-    }
-
-    public void setPager(ViewPager pager) {
-        this.pager = pager;
     }
 }

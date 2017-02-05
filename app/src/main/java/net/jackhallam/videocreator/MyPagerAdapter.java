@@ -21,15 +21,10 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
 
     private List<Fragment> pages = new ArrayList<>();
 
-
-    private ImportFragment importFragment;
-
-    MyPagerAdapter(FragmentManager fm, ViewPager viewPager) {
+    MyPagerAdapter(FragmentManager fm) {
         super(fm);
         pages.add(new LoginFragment());
-        importFragment = new ImportFragment();
-        importFragment.setPager(viewPager);
-        pages.add(importFragment);
+        pages.add(new ImportFragment());
         pages.add(new EditFragment());
         pages.add(new ExportFragment());
     }
