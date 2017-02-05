@@ -64,6 +64,7 @@ public class ImportFragment extends Fragment {
                 createAndShowAddAlertDialog();
             }
         });
+        projectPickerAdapter.setMainActivity(mainActivity);
     }
 
     @Override

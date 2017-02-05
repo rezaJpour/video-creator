@@ -39,8 +39,11 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     // View
     private FloatingActionButton fab1;
     private FloatingActionButton fab2;
-    ViewPager viewPager;
-    MyPagerAdapter myPagerAdapter;
+    private ViewPager viewPager;
+    private MyPagerAdapter myPagerAdapter;
+
+    // Controller
+    private UserState userState = UserState.NOT_LOGGED_IN;
 
     // Sign In
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -87,6 +90,19 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
             FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
     }
 
+    public enum UserState {
+        NOT_LOGGED_IN, NO_PROJECT, PROJECT
+    }
+
+    public UserState getUserState() {
+        return userState;
+    }
+
+    public void setUserState(UserState userState) {
+        this.userState = userState;
+        myPagerAdapter.notifyDataSetChanged();
+    }
+
     // ---------------------------------------
     //
     // View
@@ -116,9 +132,14 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
         return whichFab == 1 ? fab1 : fab2;
     }
 
+    private void setUpFabs() {
+        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
+        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+    }
+
     private void setUpViewPager() {
         viewPager = (ViewPager) findViewById(R.id.viewPager);
-        myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+        myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), this, viewPager);
         viewPager.setAdapter(myPagerAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
@@ -128,11 +149,6 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
             }
         });
         hideDisplayFAB(); // For initial page
-    }
-
-    private void setUpFabs() {
-        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
-        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
     }
 
     // ---------------------------------------
@@ -203,11 +219,17 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     }
 
     private void userLoggedIn() {
-        //TODO: update fragments, etc.
+        setUserState(UserState.NO_PROJECT);
+        myPagerAdapter.userLoggedIn();
     }
 
     private void userLoggedOut() {
-        //TODO: update fragments, etc.
+        setUserState(UserState.NOT_LOGGED_IN);
+        myPagerAdapter.userLoggedOut();
+    }
+
+    public FirebaseUser getFirebaseUser() {
+        return firebaseUser;
     }
 
     // ---------------------------------------

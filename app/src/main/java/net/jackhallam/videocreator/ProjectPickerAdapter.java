@@ -2,6 +2,7 @@ package net.jackhallam.videocreator;
 
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import java.util.List;
 
 public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private MainActivity mainActivity;
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ProjectViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.project_picker_view, parent, false));
@@ -30,7 +33,7 @@ public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.View
         projectViewHolder.projectLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                mainActivity.setUserState(MainActivity.UserState.PROJECT);
             }
         });
     }
@@ -54,5 +57,9 @@ public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.View
             projectNameTextView = (TextView) itemView.findViewById(R.id.project_title);
             projectLayout = itemView.findViewById(R.id.project_layout);
         }
+    }
+
+    public void setMainActivity(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
     }
 }
