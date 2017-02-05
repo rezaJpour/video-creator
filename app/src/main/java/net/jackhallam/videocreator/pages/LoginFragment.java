@@ -30,7 +30,6 @@ public class LoginFragment extends Fragment {
         mainActivity.getFab(1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
             }
         });
     }

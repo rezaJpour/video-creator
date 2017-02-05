@@ -103,6 +103,10 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
         myPagerAdapter.notifyDataSetChanged();
     }
 
+    public ViewPager getViewPager(){
+        return viewPager;
+    }
+
     // ---------------------------------------
     //
     // View
@@ -185,7 +189,6 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     private void setupGoogleSignIn() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
                 .build();
 
         googleApiClient = new GoogleApiClient.Builder(this)
