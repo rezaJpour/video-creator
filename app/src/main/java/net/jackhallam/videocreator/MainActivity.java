@@ -32,7 +32,6 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
 
     // Constants
     private static final int RC_GOOGLE_LOGIN = 1;
-    private static final int INITIAL_PAGE = 0;
 
     // Model
     private static List<VideoProject> videoProjects = new ArrayList<>();
@@ -40,9 +39,9 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     // View
     private FloatingActionButton fab1;
     private FloatingActionButton fab2;
+    ViewPager viewPager;
 
     // Sign In
-    private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private OnCompleteListener<AuthResult> onFireBaseSignInCompleteListener;
     private GoogleApiClient googleApiClient;
@@ -52,23 +51,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
-        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
-        hideDisplayFAB(INITIAL_PAGE, fab1, fab2);
-
-        ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
-        MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), pager);
-        pager.setAdapter(myPagerAdapter);
-        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                hideDisplayFAB(position, fab1, fab2);
-            }
-        });
-
-        firebaseAuth = FirebaseAuth.getInstance();
+        setUpFabs();
+        setUpViewPager();
         initializeSignInListeners();
         setupGoogleSignIn();
     }
@@ -92,14 +76,14 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     @Override
     protected void onStart() {
         super.onStart();
-        firebaseAuth.addAuthStateListener(authStateListener);
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         if (authStateListener != null)
-            firebaseAuth.removeAuthStateListener(authStateListener);
+            FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
     }
 
     // ---------------------------------------
@@ -108,8 +92,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     //
     // ---------------------------------------
 
-    private void hideDisplayFAB(int position, FloatingActionButton fab1, FloatingActionButton fab2) {
-        switch (position) {
+    private void hideDisplayFAB() {
+        switch (viewPager.getCurrentItem()) {
             case 0:
                 fab1.setImageDrawable(getResources().getDrawable(R.drawable.ic_help_black_48dp));
                 fab1.show();
@@ -129,6 +113,25 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
 
     public FloatingActionButton getFab(int whichFab) {
         return whichFab == 1 ? fab1 : fab2;
+    }
+
+    private void setUpViewPager() {
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), viewPager);
+        viewPager.setAdapter(myPagerAdapter);
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                hideDisplayFAB();
+            }
+        });
+        hideDisplayFAB(); // For initial page
+    }
+
+    private void setUpFabs() {
+        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
+        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
     }
 
     // ---------------------------------------
@@ -195,7 +198,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
 
     private void fireBaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, onFireBaseSignInCompleteListener);
+        FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(this, onFireBaseSignInCompleteListener);
     }
 
     private void userLoggedIn() {
