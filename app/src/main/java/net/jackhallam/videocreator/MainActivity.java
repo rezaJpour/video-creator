@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.auth.api.Auth;
@@ -22,6 +23,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import net.jackhallam.videocreator.model.VideoProject;
 
@@ -32,9 +38,13 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
 
     // Constants
     private static final int RC_GOOGLE_LOGIN = 1;
+    private static final String USERS = "users";
 
     // Model
-    private static List<VideoProject> videoProjects = new ArrayList<>();
+    private DatabaseReference userDatabaseReference;
+    private List<VideoProject> videoProjects = new ArrayList<>();
+    private VideoProjectsListener videoProjectsListener;
+    private String currentVideoProject;
 
     // View
     private FloatingActionButton fab1;
@@ -67,8 +77,65 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     //
     // ---------------------------------------
 
-    public static List<VideoProject> getVideoProjects() {
+    public List<VideoProject> getVideoProjects() {
         return videoProjects;
+    }
+
+    public void setVideoProjectListener(VideoProjectsListener videoProjectsListener) {
+        this.videoProjectsListener = videoProjectsListener;
+    }
+
+    public void addVideoProject(VideoProject videoProject) {
+        userDatabaseReference.push().setValue(videoProject);
+    }
+
+    private class VideoProjectsChildEventListener implements ChildEventListener {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            // TODO: This fixes a weird problem where we are trying to add duplicates
+            for (int i = 0; i < videoProjects.size(); i++)
+                if (videoProjects.get(i).getKey().equals(dataSnapshot.getKey()))
+                    return;
+            VideoProject videoProject = dataSnapshot.getValue(VideoProject.class);
+            videoProject.setKey(dataSnapshot.getKey());
+            videoProjects.add(videoProject);
+            if (videoProjectsListener != null)
+                videoProjectsListener.update();
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            VideoProject videoProject = dataSnapshot.getValue(VideoProject.class);
+            videoProject.setKey(dataSnapshot.getKey());
+            for (int i = 0; i < videoProjects.size(); i++) {
+                if (dataSnapshot.getKey().equals(videoProjects.get(i).getKey())) {
+                    videoProjects.set(i, videoProject);
+                    if (videoProjectsListener != null)
+                        videoProjectsListener.update();
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            for (int i = 0; i < videoProjects.size(); i++) {
+                if (dataSnapshot.getKey().equals(videoProjects.get(i).getKey())) {
+                    videoProjects.remove(i);
+                    if (videoProjectsListener != null)
+                        videoProjectsListener.update();
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
     }
 
     // ---------------------------------------
@@ -103,7 +170,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
         myPagerAdapter.notifyDataSetChanged();
     }
 
-    public ViewPager getViewPager(){
+    public ViewPager getViewPager() {
         return viewPager;
     }
 
@@ -222,6 +289,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     }
 
     private void userLoggedIn() {
+        userDatabaseReference = FirebaseDatabase.getInstance().getReference(USERS + "/" + firebaseUser.getUid());
+        userDatabaseReference.addChildEventListener(new VideoProjectsChildEventListener());
         setUserState(UserState.NO_PROJECT);
         myPagerAdapter.userLoggedIn();
     }
@@ -229,6 +298,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     private void userLoggedOut() {
         setUserState(UserState.NOT_LOGGED_IN);
         myPagerAdapter.userLoggedOut();
+        userDatabaseReference = null;
     }
 
     public FirebaseUser getFirebaseUser() {

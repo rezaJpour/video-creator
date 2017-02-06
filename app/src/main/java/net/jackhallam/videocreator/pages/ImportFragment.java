@@ -23,6 +23,7 @@ import net.jackhallam.videocreator.MainActivity;
 import net.jackhallam.videocreator.MyPagerAdapter;
 import net.jackhallam.videocreator.ProjectPickerAdapter;
 import net.jackhallam.videocreator.R;
+import net.jackhallam.videocreator.VideoProjectsListener;
 import net.jackhallam.videocreator.model.VideoProject;
 
 import java.util.ArrayList;
@@ -105,8 +106,7 @@ public class ImportFragment extends Fragment {
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (!titleEditText.getText().toString().isEmpty()) {
                     videoProject.setTitle(titleEditText.getText().toString());
-                    MainActivity.getVideoProjects().add(videoProject);
-                    projectPickerAdapter.notifyDataSetChanged();
+                    mainActivity.addVideoProject(videoProject);
                 }
             }
         });

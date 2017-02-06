@@ -1,5 +1,7 @@
 package net.jackhallam.videocreator.model;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,19 +10,22 @@ import java.util.List;
  */
 
 public class VideoProject {
-    private List<Clip> clips;
+    private String key;
     private String title;
+    private List<Clip> clips;
 
     public VideoProject() {
         clips = new ArrayList<>();
+        title = "";
     }
 
-    public List<Clip> getClips() {
-        return clips;
+    @Exclude
+    public String getKey() {
+        return key;
     }
 
-    public void addClip(Clip clip, int i) {
-        clips.add(i, clip);
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getTitle() {
@@ -31,12 +36,11 @@ public class VideoProject {
         this.title = title;
     }
 
-    public void saveAsVideoFile(Runnable onSuccess, Runnable onFailure) {
-        //TODO: save as a video file and call either onSuccess.run() or onFailure.run()
-        onSuccess.run();
+    public List<Clip> getClips() {
+        return clips;
     }
 
-    public String uploadAsVideoFile(){
-        return null;
+    public void setClips(List<Clip> clips) {
+        this.clips = clips;
     }
 }

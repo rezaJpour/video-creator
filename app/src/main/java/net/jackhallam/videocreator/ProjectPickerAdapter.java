@@ -11,7 +11,7 @@ import android.widget.TextView;
  * Created by jackhallam on 12/26/16.
  */
 
-public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements VideoProjectsListener {
 
     private MainActivity mainActivity;
 
@@ -23,7 +23,7 @@ public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ProjectViewHolder projectViewHolder = (ProjectViewHolder) holder;
-        projectViewHolder.projectNameTextView.setText(MainActivity.getVideoProjects().get(position).getTitle());
+        projectViewHolder.projectNameTextView.setText(mainActivity.getVideoProjects().get(position).getTitle());
         projectViewHolder.projectLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -40,7 +40,12 @@ public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return MainActivity.getVideoProjects().size();
+        return mainActivity.getVideoProjects().size();
+    }
+
+    @Override
+    public void update() {
+        notifyDataSetChanged();
     }
 
     public class ProjectViewHolder extends RecyclerView.ViewHolder {
@@ -56,5 +61,6 @@ public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void setMainActivity(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
+        mainActivity.setVideoProjectListener(this);
     }
 }
