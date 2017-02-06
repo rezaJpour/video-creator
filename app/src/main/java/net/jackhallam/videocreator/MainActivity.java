@@ -1,6 +1,7 @@
 package net.jackhallam.videocreator;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +18,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -28,9 +31,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import net.jackhallam.videocreator.model.VideoProject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,9 +50,11 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     // Constants
     private static final int RC_GOOGLE_LOGIN = 1;
     private static final String USERS = "users";
+    private static final String CLIPS_STORAGE_PATH = "gs://video-creator-1a177.appspot.com/clips/";
 
     // Model
     private DatabaseReference userDatabaseReference;
+    StorageReference clipsFolderStorageReference;
     private List<VideoProject> videoProjects = new ArrayList<>();
     private VideoProjectsListener videoProjectsListener;
     private String currentVideoProject;
@@ -136,6 +149,24 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
         @Override
         public void onCancelled(DatabaseError databaseError) {
         }
+    }
+
+    public void storeVideo(InputStream in/*String pathToVideo/*, OnFailureListener onFailureListener, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener*/) throws FileNotFoundException {
+        //InputStream stream = new FileInputStream(new File(pathToVideo));
+        UploadTask uploadTask = clipsFolderStorageReference.child("samplevideo.mp4").putStream(in);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d("d", "onSuccess _____________________________");
+            }
+        });
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("d", "onFailure _____________________________");
+            }
+        });
+       // uploadTask.addOnFailureListener(onFailureListener).addOnSuccessListener(onSuccessListener);
     }
 
     // ---------------------------------------
@@ -291,6 +322,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     private void userLoggedIn() {
         userDatabaseReference = FirebaseDatabase.getInstance().getReference(USERS + "/" + firebaseUser.getUid());
         userDatabaseReference.addChildEventListener(new VideoProjectsChildEventListener());
+        clipsFolderStorageReference = FirebaseStorage.getInstance().getReferenceFromUrl(CLIPS_STORAGE_PATH);
         setUserState(UserState.NO_PROJECT);
         myPagerAdapter.userLoggedIn();
     }
@@ -299,6 +331,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
         setUserState(UserState.NOT_LOGGED_IN);
         myPagerAdapter.userLoggedOut();
         userDatabaseReference = null;
+        clipsFolderStorageReference = null;
     }
 
     public FirebaseUser getFirebaseUser() {

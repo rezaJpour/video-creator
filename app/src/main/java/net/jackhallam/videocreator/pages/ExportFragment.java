@@ -3,6 +3,7 @@ package net.jackhallam.videocreator.pages;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.RuntimeExecutionException;
 
 import net.jackhallam.videocreator.MainActivity;
 import net.jackhallam.videocreator.R;
@@ -40,6 +44,18 @@ public class ExportFragment extends Fragment {
         final View inflatedView = inflater.inflate(R.layout.fragment_export, container, false);
 
         saveImageView = (ImageView) inflatedView.findViewById(R.id.image_save_to_device);
+        saveImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+
+                    mainActivity.storeVideo(getResources().openRawResource(R.raw.samplevideo));
+                }catch (Exception e){
+                    throw new RuntimeException(e);
+                }
+
+            }
+        });
         uploadImageView = (ImageView) inflatedView.findViewById(R.id.image_upload);
         uploadImageView.setOnClickListener(new UploadVideoClickListener());
 
