@@ -12,12 +12,16 @@ public class VideoThumbnail {
     private int mins;
     private int secs;
     private int milli;
+    private String filePath;
+    private long totalTime;
 
-    public VideoThumbnail(Bitmap b, int min, int sec, int mil){
+    public VideoThumbnail(Bitmap b, int min, int sec, int mil, String path, long time){
         bitmap = b;
         mins = min;
         secs = sec;
         milli = mil;
+        filePath = path;
+        totalTime = time;
     }
 
     public Bitmap getBitmap() {
@@ -34,5 +38,11 @@ public class VideoThumbnail {
 
     public int getMilli() {
         return milli;
+    }
+
+    public String getFilePath() { return filePath; }
+
+    public long getTotalTime() {
+        return totalTime;
     }
 }

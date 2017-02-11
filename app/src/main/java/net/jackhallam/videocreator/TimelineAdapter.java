@@ -25,7 +25,9 @@ import net.jackhallam.videocreator.model.Clip;
 import net.jackhallam.videocreator.model.VideoThumbnail;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jackhallam on 12/28/16.
@@ -36,15 +38,19 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     private Context mContext;
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 52;
     private RecyclerView mListView;
-    private List<Bitmap> videoList;
-    private List<Clip> deviceVideos;
+    private List<Clip> videoList;
+    private List<VideoThumbnail> deviceVideos;
     private Cursor cursor;
     private VideoPickerAdapter vpAdapter;
+
+    // This map is purely used for speed
+    private Map<String, Bitmap> map;
 
     public TimelineAdapter(Context context, RecyclerView recyclerView) {
         mContext = context;
         videoList = new ArrayList<>();
         deviceVideos=new ArrayList<>();
+        map = new HashMap<>();
         if(ContextCompat.checkSelfPermission(mContext,android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions((Activity)mContext,
                     new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -82,6 +88,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                 int sec = (int) (totalTime / 1000) % 60;
                 int minutes = (int) ((totalTime / (1000 * 60)) % 60);
                 int milli = (int) (totalTime % 1000);
+
                 Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
                 if (bm.getWidth() > bm.getHeight()) {
                     bm = Bitmap.createBitmap(bm, 0, 0, bm.getHeight(), bm.getHeight());
@@ -89,13 +96,9 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                     bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getWidth());
                 }
 
-                // Make the clip
-                Clip clip = new Clip();
-                clip.setPath(filePath);
-                clip.setThumbnail(new VideoThumbnail(bm, minutes, sec, milli));
-                clip.setStart(0);
-                clip.setEnd(totalTime);
-                deviceVideos.add(clip);
+                deviceVideos.add(new VideoThumbnail(bm, minutes, sec, milli, filePath, totalTime));
+
+                map.put(filePath,bm);
             }
             return null;
         }
@@ -125,7 +128,8 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if(position%2==1){
             VideoViewHolder holder1 = (VideoViewHolder)holder;
-            holder1.video.setImageBitmap(videoList.get((int)Math.floor(position/2)));
+            Clip clip = videoList.get((int)Math.floor(position/2));
+            holder1.video.setImageBitmap(map.get(clip.getPath()));
             holder1.video.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {

@@ -12,9 +12,6 @@ public class Clip {
     private long start;
     private long end;
 
-    // Used for the timeline
-    private VideoThumbnail thumbnail;
-
     public Clip() {
     }
 
@@ -51,11 +48,4 @@ public class Clip {
         this.end = end;
     }
 
-    public VideoThumbnail getThumbnail() {
-        return thumbnail;
-    }
-
-    public void setThumbnail(VideoThumbnail thumbnail) {
-        this.thumbnail = thumbnail;
-    }
 }

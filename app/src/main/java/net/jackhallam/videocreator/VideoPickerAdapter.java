@@ -26,11 +26,11 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
     private int index;
     private Context mContext;
     private AlertDialog ad;
-    private List<Bitmap> videoList;
+    private List<Clip> videoList;
     private RecyclerView.Adapter adap;
-    private List<Clip> deviceVideos;
+    private List<VideoThumbnail> deviceVideos;
 
-    public VideoPickerAdapter(int location, Context con, AlertDialog alert, List<Bitmap> li, RecyclerView.Adapter ra, List<Clip> videosOnDevice){
+    public VideoPickerAdapter(int location, Context con, AlertDialog alert, List<Clip> li, RecyclerView.Adapter ra, List<VideoThumbnail> videosOnDevice){
         index = location;
         mContext = con;
         ad = alert;
@@ -49,7 +49,7 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
     public void onBindViewHolder(VideoPickerAdapter.ViewHolder holder, int position) {
         ImageView iv = holder.image;
         TextView tv = holder.time;
-        VideoThumbnail myVideo= deviceVideos.get(position).getThumbnail();
+        VideoThumbnail myVideo= deviceVideos.get(position);
 
         int min = myVideo.getMins();
         int sec = myVideo.getSecs();
@@ -59,10 +59,17 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
         Bitmap bm = myVideo.getBitmap();
         iv.setImageBitmap(bm);
         final Bitmap finalBm = bm;
+
+        // Make the clip
+        final Clip clip = new Clip();
+        clip.setPath(myVideo.getFilePath());
+        clip.setStart(0);
+        clip.setEnd(myVideo.getTotalTime());
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                videoList.add(index, finalBm);
+                videoList.add(index, clip);
                 adap.notifyDataSetChanged();
                 ad.dismiss();
             }
