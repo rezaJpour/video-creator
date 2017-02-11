@@ -2,9 +2,6 @@ package net.jackhallam.videocreator.model;
 
 import com.google.firebase.database.Exclude;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by jackhallam on 1/15/17.
  */
@@ -12,10 +9,10 @@ import java.util.List;
 public class VideoProject {
     private String key;
     private String title;
-    private List<Clip> clips;
+//    private List<Clip> clips;
 
     public VideoProject() {
-        clips = new ArrayList<>();
+//        clips = new ArrayList<>();
         title = "";
     }
 
@@ -36,11 +33,11 @@ public class VideoProject {
         this.title = title;
     }
 
-    public List<Clip> getClips() {
-        return clips;
-    }
-
-    public void setClips(List<Clip> clips) {
-        this.clips = clips;
-    }
+//    public List<Clip> getClips() {
+//        return clips;
+//    }
+//
+//    public void setClips(List<Clip> clips) {
+//        this.clips = clips;
+//    }
 }

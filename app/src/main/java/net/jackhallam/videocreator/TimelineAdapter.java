@@ -21,6 +21,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+
 import net.jackhallam.videocreator.model.Clip;
 import net.jackhallam.videocreator.model.VideoThumbnail;
 
@@ -42,6 +47,8 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     private List<VideoThumbnail> deviceVideos;
     private Cursor cursor;
     private VideoPickerAdapter vpAdapter;
+    private DatabaseReference projectRef;
+    private ChildEventListener cel;
 
     // This map is purely used for speed
     private Map<String, Bitmap> map;
@@ -109,6 +116,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                 Log.d("TIMELINE", "NOT null");
                 vpAdapter.notifyDataSetChanged();
             }
+            notifyDataSetChanged();
         }
     }
 
@@ -128,13 +136,14 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if(position%2==1){
             VideoViewHolder holder1 = (VideoViewHolder)holder;
-            Clip clip = videoList.get((int)Math.floor(position/2));
+            final Clip clip = videoList.get((int)Math.floor(position/2));
             holder1.video.setImageBitmap(map.get(clip.getPath()));
             holder1.video.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    videoList.remove((int) Math.floor(position/2));
-                    notifyDataSetChanged();
+//                    videoList.remove((int) Math.floor(position/2));
+//                    notifyDataSetChanged();
+                    projectRef.child(clip.getKey()).removeValue();
                     return true;
                 }
             });
@@ -186,6 +195,67 @@ public class TimelineAdapter extends RecyclerView.Adapter {
 
     public void setCursor(Cursor c){
         cursor = c;
+    }
+
+    public void setProjectRef(DatabaseReference dr){
+        videoList = new ArrayList<>();
+        projectRef = dr;
+        if(cel != null) {
+            projectRef.removeEventListener(cel);
+        }
+        cel = new ClipsChildEventListener();
+        projectRef.addChildEventListener(cel);
+    }
+
+    private class ClipsChildEventListener implements ChildEventListener {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Clip clip = dataSnapshot.getValue(Clip.class);
+            clip.setKey(dataSnapshot.getKey());
+            int pos = clip.getPosition();
+            if(pos>=videoList.size()) {
+                videoList.add(clip);
+            } else {
+                videoList.add(pos, clip);
+            }
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            Clip clip = dataSnapshot.getValue(Clip.class);
+            clip.setKey(dataSnapshot.getKey());
+            for (int i = 0; i < videoList.size(); i++) {
+                if (dataSnapshot.getKey().equals(videoList.get(i).getKey())) {
+                    videoList.set(i, clip);
+                    notifyDataSetChanged();
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            for (int i = 0; i < videoList.size(); i++) {
+                if (dataSnapshot.getKey().equals(videoList.get(i).getKey())) {
+                    videoList.remove(i);
+                    notifyDataSetChanged();
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    }
+
+    public void addClip(Clip clip){
+        projectRef.push().setValue(clip);
     }
 
 }

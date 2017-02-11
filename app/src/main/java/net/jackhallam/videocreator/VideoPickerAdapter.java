@@ -27,7 +27,7 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
     private Context mContext;
     private AlertDialog ad;
     private List<Clip> videoList;
-    private RecyclerView.Adapter adap;
+    private TimelineAdapter adap;
     private List<VideoThumbnail> deviceVideos;
 
     public VideoPickerAdapter(int location, Context con, AlertDialog alert, List<Clip> li, RecyclerView.Adapter ra, List<VideoThumbnail> videosOnDevice){
@@ -35,7 +35,7 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
         mContext = con;
         ad = alert;
         videoList = li;
-        adap = ra;
+        adap = (TimelineAdapter) ra;
         deviceVideos = videosOnDevice;
     }
 
@@ -65,12 +65,12 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
         clip.setPath(myVideo.getFilePath());
         clip.setStart(0);
         clip.setEnd(myVideo.getTotalTime());
+        clip.setPosition(index);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                videoList.add(index, clip);
-                adap.notifyDataSetChanged();
+                adap.addClip(clip);
                 ad.dismiss();
             }
         });

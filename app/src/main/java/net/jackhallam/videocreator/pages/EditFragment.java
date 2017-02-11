@@ -38,7 +38,6 @@ public class EditFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) inflatedView.findViewById(R.id.recycler_view);
         mTimelineAdapter = new TimelineAdapter(getActivity(), recyclerView);
         recyclerView.setAdapter(mTimelineAdapter);
-
         return inflatedView;
     }
 
@@ -68,5 +67,10 @@ public class EditFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mainActivity = (MainActivity) getActivity();
+        mTimelineAdapter.setProjectRef(mainActivity.getVideoProjectDatabaseReference().child("clips"));
+    }
+
+    public void setProjectRef(){
+        mTimelineAdapter.setProjectRef(mainActivity.getVideoProjectDatabaseReference().child("clips"));
     }
 }
