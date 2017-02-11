@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import net.jackhallam.videocreator.model.Clip;
 import net.jackhallam.videocreator.model.VideoThumbnail;
 
 import java.util.List;
@@ -27,9 +28,9 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
     private AlertDialog ad;
     private List<Bitmap> videoList;
     private RecyclerView.Adapter adap;
-    private List<VideoThumbnail> deviceVideos;
+    private List<Clip> deviceVideos;
 
-    public VideoPickerAdapter(int location, Context con, AlertDialog alert, List<Bitmap> li, RecyclerView.Adapter ra, List<VideoThumbnail> videosOnDevice){
+    public VideoPickerAdapter(int location, Context con, AlertDialog alert, List<Bitmap> li, RecyclerView.Adapter ra, List<Clip> videosOnDevice){
         index = location;
         mContext = con;
         ad = alert;
@@ -48,7 +49,7 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
     public void onBindViewHolder(VideoPickerAdapter.ViewHolder holder, int position) {
         ImageView iv = holder.image;
         TextView tv = holder.time;
-        VideoThumbnail myVideo= deviceVideos.get(position);
+        VideoThumbnail myVideo= deviceVideos.get(position).getThumbnail();
 
         int min = myVideo.getMins();
         int sec = myVideo.getSecs();

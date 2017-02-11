@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import net.jackhallam.videocreator.model.Clip;
 import net.jackhallam.videocreator.model.VideoThumbnail;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 52;
     private RecyclerView mListView;
     private List<Bitmap> videoList;
-    private List<VideoThumbnail> deviceVideos;
+    private List<Clip> deviceVideos;
     private Cursor cursor;
     private VideoPickerAdapter vpAdapter;
 
@@ -77,17 +78,24 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                 //use one of overloaded setDataSource() functions to set your data source
                 retriever.setDataSource(filePath);
                 String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                double timeInMillisec = Long.parseLong(time);
-                int sec = (int) (timeInMillisec / 1000) % 60;
-                int minutes = (int) ((timeInMillisec / (1000 * 60)) % 60);
-                int milli = (int) (timeInMillisec % 1000);
+                long totalTime = Long.parseLong(time);
+                int sec = (int) (totalTime / 1000) % 60;
+                int minutes = (int) ((totalTime / (1000 * 60)) % 60);
+                int milli = (int) (totalTime % 1000);
                 Bitmap bm = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
                 if (bm.getWidth() > bm.getHeight()) {
                     bm = Bitmap.createBitmap(bm, 0, 0, bm.getHeight(), bm.getHeight());
                 } else {
                     bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getWidth());
                 }
-                deviceVideos.add(new VideoThumbnail(bm, minutes, sec, milli));
+
+                // Make the clip
+                Clip clip = new Clip();
+                clip.setPath(filePath);
+                clip.setThumbnail(new VideoThumbnail(bm, minutes, sec, milli));
+                clip.setStart(0);
+                clip.setEnd(totalTime);
+                deviceVideos.add(clip);
             }
             return null;
         }
