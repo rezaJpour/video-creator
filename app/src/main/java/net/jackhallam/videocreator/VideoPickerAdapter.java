@@ -49,7 +49,7 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
     public void onBindViewHolder(VideoPickerAdapter.ViewHolder holder, int position) {
         ImageView iv = holder.image;
         TextView tv = holder.time;
-        VideoThumbnail myVideo= deviceVideos.get(position);
+        VideoThumbnail myVideo = deviceVideos.get(position);
 
         int min = myVideo.getMins();
         int sec = myVideo.getSecs();
@@ -65,7 +65,13 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
         clip.setPath(myVideo.getFilePath());
         clip.setStart(0);
         clip.setEnd(myVideo.getTotalTime());
-        clip.setPosition(index);
+
+        if(index == videoList.size()){
+            clip.setNextClipKey("");
+        }else {
+            Clip next = videoList.get(index);
+            clip.setNextClipKey(next.getKey());
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

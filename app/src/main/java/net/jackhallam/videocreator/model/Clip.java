@@ -11,7 +11,7 @@ public class Clip {
     private String path;
     private long start;
     private long end;
-    private int position;
+    private String nextClipKey;
 
     public Clip() {
     }
@@ -49,11 +49,11 @@ public class Clip {
         this.end = end;
     }
 
-    public int getPosition() {
-        return position;
+    public String getNextClipKey() {
+        return nextClipKey;
     }
 
-    public void setPosition(int position) {
-        this.position = position;
+    public void setNextClipKey(String nextClipKey) {
+        this.nextClipKey = nextClipKey;
     }
 }

@@ -31,6 +31,7 @@ import net.jackhallam.videocreator.model.VideoThumbnail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,18 +46,22 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     private RecyclerView mListView;
     private List<Clip> videoList;
     private List<VideoThumbnail> deviceVideos;
+    private List<String> videoKeyList;
     private Cursor cursor;
     private VideoPickerAdapter vpAdapter;
     private DatabaseReference projectRef;
     private ChildEventListener cel;
+    private boolean initialLoad;
 
     // This map is purely used for speed
     private Map<String, Bitmap> map;
 
     public TimelineAdapter(Context context, RecyclerView recyclerView) {
         mContext = context;
-        videoList = new ArrayList<>();
+        initialLoad=true;
+        videoList = new LinkedList<>();
         deviceVideos=new ArrayList<>();
+        videoKeyList = new LinkedList<>();
         map = new HashMap<>();
         if(ContextCompat.checkSelfPermission(mContext,android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions((Activity)mContext,
@@ -116,6 +121,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                 Log.d("TIMELINE", "NOT null");
                 vpAdapter.notifyDataSetChanged();
             }
+            reorder();
             notifyDataSetChanged();
         }
     }
@@ -141,8 +147,6 @@ public class TimelineAdapter extends RecyclerView.Adapter {
             holder1.video.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-//                    videoList.remove((int) Math.floor(position/2));
-//                    notifyDataSetChanged();
                     projectRef.child(clip.getKey()).removeValue();
                     return true;
                 }
@@ -198,7 +202,8 @@ public class TimelineAdapter extends RecyclerView.Adapter {
     }
 
     public void setProjectRef(DatabaseReference dr){
-        videoList = new ArrayList<>();
+        videoList = new LinkedList<>();
+        videoKeyList = new LinkedList<>();
         projectRef = dr;
         if(cel != null) {
             projectRef.removeEventListener(cel);
@@ -207,17 +212,56 @@ public class TimelineAdapter extends RecyclerView.Adapter {
         projectRef.addChildEventListener(cel);
     }
 
+    public void reorder(){
+        initialLoad=false;
+        List<Clip> newList = new LinkedList<>();
+        List<String> newKeyList = new LinkedList<>();
+        String current = "";
+        for(int i = 0; i < videoList.size(); i++){
+            for(int j = 0; j < videoList.size();j++){
+                Clip c = videoList.get(j);
+                if(c.getNextClipKey().equals(current)){
+                    current = c.getKey();
+                    newList.add(0, videoList.get(j));
+                    newKeyList.add(0, videoKeyList.get(j));
+                }
+            }
+        }
+        videoList = newList;
+        videoKeyList = newKeyList;
+    }
+
     private class ClipsChildEventListener implements ChildEventListener {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Clip clip = dataSnapshot.getValue(Clip.class);
             clip.setKey(dataSnapshot.getKey());
-            int pos = clip.getPosition();
-            if(pos>=videoList.size()) {
+            String next = clip.getNextClipKey();
+            if(initialLoad){
                 videoList.add(clip);
+                videoKeyList.add(clip.getKey());
             } else {
-                videoList.add(pos, clip);
+                if (next.equals("") && videoList.size() != 0) {
+                    Clip prev = videoList.get(videoList.size() - 1);
+                    prev.setNextClipKey(dataSnapshot.getKey());
+                    projectRef.child(prev.getKey()).setValue(prev);
+                    videoList.add(clip);
+                    videoKeyList.add(clip.getKey());
+                } else if (videoList.size() == 0) {
+                    videoList.add(clip);
+                    videoKeyList.add(dataSnapshot.getKey());
+                } else {
+                    int index = videoKeyList.indexOf(next);
+                    if (index != 0) {
+                        Clip prev = videoList.get(index - 1);
+                        prev.setNextClipKey(dataSnapshot.getKey());
+                        projectRef.child(prev.getKey()).setValue(prev);
+                    }
+                    videoList.add(index, clip);
+                    videoKeyList.add(index, dataSnapshot.getKey());
+                }
             }
+
             notifyDataSetChanged();
         }
 
@@ -238,7 +282,16 @@ public class TimelineAdapter extends RecyclerView.Adapter {
         public void onChildRemoved(DataSnapshot dataSnapshot) {
             for (int i = 0; i < videoList.size(); i++) {
                 if (dataSnapshot.getKey().equals(videoList.get(i).getKey())) {
+                    Clip remove = videoList.get(i);
+                    if(i>0){
+                        Clip prev = videoList.get(i-1);
+                        prev.setNextClipKey(remove.getNextClipKey());
+                        projectRef.child(prev.getKey()).setValue(prev);
+                    }
+
                     videoList.remove(i);
+                    videoKeyList.remove(i);
+
                     notifyDataSetChanged();
                     return;
                 }
