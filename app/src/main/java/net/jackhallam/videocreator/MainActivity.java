@@ -58,7 +58,6 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     private VideoProjectsListener videoProjectsListener;
     private String currentVideoProject;
     private DatabaseReference videoProjectDatabaseReference;
-    private File mp4Video;
     private List<MP4UpdateListener> mp4UpdateListeners = new ArrayList<>();
 
     // View
@@ -164,25 +163,24 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
         return null;
     }
 
-    public void setVideoProjectDatabaseReference(int pos){
+    public void setVideoProjectDatabaseReference(int pos) {
         String child = videoProjects.get(pos).getKey();
         videoProjectDatabaseReference = userDatabaseReference.child(child);
     }
 
-    public DatabaseReference getVideoProjectDatabaseReference(){
+    public DatabaseReference getVideoProjectDatabaseReference() {
         return videoProjectDatabaseReference;
     }
 
-    public void mp4Updated(File mp4File){
-        mp4Video = mp4File;
-        for(MP4UpdateListener mp4UpdateListener : mp4UpdateListeners) {
-            if(mp4UpdateListener != null) {
+    public void mp4Updated(File mp4File) {
+        for (MP4UpdateListener mp4UpdateListener : mp4UpdateListeners) {
+            if (mp4UpdateListener != null) {
                 mp4UpdateListener.mp4Updated(mp4File);
             }
         }
     }
 
-    public void registerMP4UpdateListener(MP4UpdateListener mp4UpdateListener){
+    public void registerMP4UpdateListener(MP4UpdateListener mp4UpdateListener) {
         mp4UpdateListeners.add(mp4UpdateListener);
     }
 
@@ -266,12 +264,16 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
                 super.onPageSelected(position);
                 hideDisplayFAB();
                 Fragment f = myPagerAdapter.getItem(position);
-                if(f.getClass()== EditFragment.class){
+                if (f.getClass() == EditFragment.class) {
                     ((EditFragment) f).setProjectRef();
                 }
             }
         });
         hideDisplayFAB(); // For initial page
+    }
+
+    public int getCurrentPage() {
+        return viewPager.getCurrentItem();
     }
 
     // ---------------------------------------

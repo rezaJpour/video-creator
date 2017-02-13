@@ -3,6 +3,7 @@ package net.jackhallam.videocreator.tasks;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -22,7 +23,7 @@ import java.util.List;
  * Created by jackhallam on 2/10/17.
  */
 
-public class ProjectToMP4Task extends AsyncTask<VideoProject, Void, Void> {
+public class ProjectToMP4Task extends AsyncTask<VideoProject, Void, File> {
 
     private MainActivity mainActivity;
 
@@ -30,14 +31,14 @@ public class ProjectToMP4Task extends AsyncTask<VideoProject, Void, Void> {
         this.mainActivity = mainActivity;
     }
 
-    protected Void doInBackground(VideoProject... videoProjects) {
+    protected File doInBackground(VideoProject... videoProjects) {
         try {
             MultipartUtility multipart = new MultipartUtility(Util.BACKEND_URL + "createVideoProject", "UTF-8");
             multipart.addFormField("videoProject", new Gson().toJson(videoProjects[0]));
             List<Clip> clips = videoProjects[0].getClips();
             for (Clip clip : clips) {
                 File videoFile = new File(clip.getPath());
-                multipart.addFilePart(clip.getPath(), videoFile);
+                multipart.addFilePart(clip.getKey(), videoFile);
             }
 
             List<String> response = multipart.finish();
@@ -45,7 +46,7 @@ public class ProjectToMP4Task extends AsyncTask<VideoProject, Void, Void> {
 
 
             ContextWrapper cw = new ContextWrapper(mainActivity);
-            File directory = cw.getDir("video", Context.MODE_PRIVATE);
+            File directory = cw.getDir("", Context.MODE_PRIVATE);
 
 
             URL url = new URL(videoURL);
@@ -58,7 +59,7 @@ public class ProjectToMP4Task extends AsyncTask<VideoProject, Void, Void> {
             }
 
             InputStream input = httpURLConnection.getInputStream();
-            OutputStream output = new FileOutputStream(directory.getAbsolutePath() + "video.mp4");
+            OutputStream output = new FileOutputStream(directory.getAbsolutePath() + "/video.mp4");
 
             byte data[] = new byte[4096];
             int count;
@@ -70,12 +71,18 @@ public class ProjectToMP4Task extends AsyncTask<VideoProject, Void, Void> {
                 output.write(data, 0, count);
             }
 
-            File videoFile = new File(directory.getAbsolutePath() + "video.mp4");
-            mainActivity.mp4Updated(videoFile);
-            return null;
+            File videoFile = new File(directory.getAbsolutePath() + "/video.mp4");
+
+            return videoFile;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    protected void onPostExecute(File file) {
+        super.onPostExecute(file);
+        mainActivity.mp4Updated(file);
     }
 }

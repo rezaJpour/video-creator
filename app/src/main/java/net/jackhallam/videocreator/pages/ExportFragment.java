@@ -62,11 +62,14 @@ public class ExportFragment extends Fragment implements MP4UpdateListener {
 
     @Override
     public void mp4Updated(File mp4File) {
+        if (mainActivity.getCurrentPage() != 3) {
+            return;
+        }
         saveVideo();
     }
 
     private void saveVideo() {
-        String url = Util.BACKEND_URL+ (isSave ? "out.mp4" : "out.html");
+        String url = Util.BACKEND_URL + (isSave ? "out.mp4" : "out.html");
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);

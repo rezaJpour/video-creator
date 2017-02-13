@@ -252,13 +252,16 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                     videoKeyList.add(dataSnapshot.getKey());
                 } else {
                     int index = videoKeyList.indexOf(next);
-                    if (index != 0) {
+                    if (index > 0) {
                         Clip prev = videoList.get(index - 1);
                         prev.setNextClipKey(dataSnapshot.getKey());
                         projectRef.child(prev.getKey()).setValue(prev);
                     }
-                    videoList.add(index, clip);
-                    videoKeyList.add(index, dataSnapshot.getKey());
+                    // TODO
+                    if (index >= 0) {
+                        videoList.add(index, clip);
+                        videoKeyList.add(index, dataSnapshot.getKey());
+                    }
                 }
             }
             ((MainActivity) mContext).getCurrentVideoProject().setClips(videoList);
