@@ -33,6 +33,8 @@ public class ProjectToMP4Task extends AsyncTask<VideoProject, Void, File> {
 
     protected File doInBackground(VideoProject... videoProjects) {
         try {
+            mainActivity.getCurrentVideoProject().setClips(mainActivity.getTimeLineAdapter().getVideoList());
+
             MultipartUtility multipart = new MultipartUtility(Util.BACKEND_URL + "createVideoProject", "UTF-8");
             multipart.addFormField("videoProject", new Gson().toJson(videoProjects[0]));
             List<Clip> clips = videoProjects[0].getClips();

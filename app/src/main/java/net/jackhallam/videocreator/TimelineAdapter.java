@@ -58,6 +58,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
 
     public TimelineAdapter(Context context, RecyclerView recyclerView) {
         mContext = context;
+        ((MainActivity) context).setTimeLineAdapter(this);
         initialLoad=true;
         videoList = new LinkedList<>();
         deviceVideos=new ArrayList<>();
@@ -295,7 +296,6 @@ public class TimelineAdapter extends RecyclerView.Adapter {
 
                     videoList.remove(i);
                     videoKeyList.remove(i);
-                    ((MainActivity) mContext).getCurrentVideoProject().setClips(videoList);
                     notifyDataSetChanged();
                     return;
                 }
@@ -315,4 +315,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
         projectRef.push().setValue(clip);
     }
 
+    public List<Clip> getVideoList() {
+        return videoList;
+    }
 }

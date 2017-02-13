@@ -183,6 +183,13 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     public void registerMP4UpdateListener(MP4UpdateListener mp4UpdateListener) {
         mp4UpdateListeners.add(mp4UpdateListener);
     }
+    private TimelineAdapter timeLineAdapter;
+    public void setTimeLineAdapter(TimelineAdapter timeLineAdapter){
+        this.timeLineAdapter = timeLineAdapter;
+    }
+    public TimelineAdapter getTimeLineAdapter(){
+        return this.timeLineAdapter;
+    }
 
     // ---------------------------------------
     //
