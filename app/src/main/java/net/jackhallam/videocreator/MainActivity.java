@@ -368,4 +368,11 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     private void showError(String error) {
         Snackbar.make(findViewById(R.id.project_outer), error, Snackbar.LENGTH_LONG).show();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onPause();
+        viewPager.setCurrentItem(0);
+        myPagerAdapter.notifyDataSetChanged();
+    }
 }

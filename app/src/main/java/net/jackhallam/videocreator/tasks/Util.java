@@ -10,5 +10,5 @@ import java.io.OutputStream;
  */
 
 public class Util {
-    final static String BACKEND_URL = "http://192.168.0.15:4567/";
+    public final static String BACKEND_URL = "http://192.168.0.15:4567/";
 }
