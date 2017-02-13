@@ -21,7 +21,7 @@ import java.util.List;
 
 public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.ViewHolder> {
 
-//    private Bitmap bm;
+    //    private Bitmap bm;
 //    private Cursor cursor;
     private int index;
     private Context mContext;
@@ -30,7 +30,7 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
     private TimelineAdapter adap;
     private List<VideoThumbnail> deviceVideos;
 
-    public VideoPickerAdapter(int location, Context con, AlertDialog alert, List<Clip> li, RecyclerView.Adapter ra, List<VideoThumbnail> videosOnDevice){
+    public VideoPickerAdapter(int location, Context con, AlertDialog alert, List<Clip> li, RecyclerView.Adapter ra, List<VideoThumbnail> videosOnDevice) {
         index = location;
         mContext = con;
         ad = alert;
@@ -92,7 +92,7 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
         return deviceVideos.size();
     }
 
-    public class ViewHolder  extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView image;
         private TextView time;

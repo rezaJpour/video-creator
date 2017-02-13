@@ -21,13 +21,14 @@ public class ProjectPickerAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         ProjectViewHolder projectViewHolder = (ProjectViewHolder) holder;
         projectViewHolder.projectNameTextView.setText(mainActivity.getVideoProjects().get(position).getTitle());
         projectViewHolder.projectLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mainActivity.setVideoProjectDatabaseReference(position);
+                mainActivity.setVideoProjectDatabaseReference(holder.getAdapterPosition());
+                mainActivity.setCurrentVideoProject(mainActivity.getVideoProjects().get(holder.getAdapterPosition()).getKey());
                 mainActivity.setUserState(MainActivity.UserState.PROJECT);
                 mainActivity.getViewPager().setCurrentItem(mainActivity.getViewPager().getCurrentItem() + 1);
             }

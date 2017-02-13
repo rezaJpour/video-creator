@@ -261,7 +261,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                     videoKeyList.add(index, dataSnapshot.getKey());
                 }
             }
-
+            ((MainActivity) mContext).getCurrentVideoProject().setClips(videoList);
             notifyDataSetChanged();
         }
 
@@ -272,6 +272,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
             for (int i = 0; i < videoList.size(); i++) {
                 if (dataSnapshot.getKey().equals(videoList.get(i).getKey())) {
                     videoList.set(i, clip);
+                    ((MainActivity) mContext).getCurrentVideoProject().setClips(videoList);
                     notifyDataSetChanged();
                     return;
                 }
@@ -291,7 +292,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
 
                     videoList.remove(i);
                     videoKeyList.remove(i);
-
+                    ((MainActivity) mContext).getCurrentVideoProject().setClips(videoList);
                     notifyDataSetChanged();
                     return;
                 }

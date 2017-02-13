@@ -38,6 +38,7 @@ import com.google.firebase.storage.UploadTask;
 import net.jackhallam.videocreator.model.VideoProject;
 import net.jackhallam.videocreator.pages.EditFragment;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -57,6 +58,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     private VideoProjectsListener videoProjectsListener;
     private String currentVideoProject;
     private DatabaseReference videoProjectDatabaseReference;
+    private File mp4Video;
+    private List<MP4UpdateListener> mp4UpdateListeners = new ArrayList<>();
 
     // View
     private FloatingActionButton fab1;
@@ -150,22 +153,15 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
         }
     }
 
-    public void storeVideo(InputStream in/*String pathToVideo/*, OnFailureListener onFailureListener, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener*/) throws FileNotFoundException {
-        //InputStream stream = new FileInputStream(new File(pathToVideo));
-        UploadTask uploadTask = clipsFolderStorageReference.child("samplevideo.mp4").putStream(in);
-        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Log.d("d", "onSuccess _____________________________");
-            }
-        });
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("d", "onFailure _____________________________");
-            }
-        });
-       // uploadTask.addOnFailureListener(onFailureListener).addOnSuccessListener(onSuccessListener);
+    public void setCurrentVideoProject(String key) {
+        currentVideoProject = key;
+    }
+
+    public VideoProject getCurrentVideoProject() {
+        for (VideoProject videoProject : videoProjects)
+            if (videoProject.getKey().equals(currentVideoProject))
+                return videoProject;
+        return null;
     }
 
     public void setVideoProjectDatabaseReference(int pos){
@@ -175,6 +171,19 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
 
     public DatabaseReference getVideoProjectDatabaseReference(){
         return videoProjectDatabaseReference;
+    }
+
+    public void mp4Updated(File mp4File){
+        mp4Video = mp4File;
+        for(MP4UpdateListener mp4UpdateListener : mp4UpdateListeners) {
+            if(mp4UpdateListener != null) {
+                mp4UpdateListener.mp4Updated(mp4File);
+            }
+        }
+    }
+
+    public void registerMP4UpdateListener(MP4UpdateListener mp4UpdateListener){
+        mp4UpdateListeners.add(mp4UpdateListener);
     }
 
     // ---------------------------------------
@@ -359,5 +368,4 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     private void showError(String error) {
         Snackbar.make(findViewById(R.id.project_outer), error, Snackbar.LENGTH_LONG).show();
     }
-
 }
