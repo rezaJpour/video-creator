@@ -2,6 +2,7 @@ package net.jackhallam.videocreator;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -36,6 +37,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import wseemann.media.FFmpegMediaMetadataRetriever;
 
 /**
  * Created by jackhallam on 12/28/16.
@@ -162,7 +165,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                     View vw = LayoutInflater.from(mContext).inflate(R.layout.edit_video_view,null,false);
                     builder.setView(vw);
 
-                    final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                    final FFmpegMediaMetadataRetriever retriever = new FFmpegMediaMetadataRetriever();
                     retriever.setDataSource(clip.getPath());
 
                     final ImageView startFrame = (ImageView) vw.findViewById(R.id.startFrame);
@@ -170,6 +173,9 @@ public class TimelineAdapter extends RecyclerView.Adapter {
 
                     // get seekbar from view
                     final CrystalRangeSeekbar rangeSeekbar = (CrystalRangeSeekbar) vw.findViewById(R.id.rangeSeekbar);
+                    rangeSeekbar.setMinValue(0).setMaxValue((int)(clip.getLengthOfClip()/1000));
+
+                    rangeSeekbar.setMinStartValue((int)(clip.getStart()/1000)).setMaxStartValue((int)(clip.getEnd()/1000)).apply();
 
                     // set listener
                     rangeSeekbar.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
@@ -177,10 +183,21 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                         public void valueChanged(Number minValue, Number maxValue) {
                             Log.d("MIN",minValue.longValue()+"");
                             Log.d("MAX",maxValue.longValue()+"");
-//                            startFrame.setImageBitmap(retriever.getFrameAtTime(minValue.longValue(),
-//                                    MediaMetadataRetriever.OPTION_CLOSEST));
-//                            endFrame.setImageBitmap(retriever.getFrameAtTime(maxValue.longValue(),
-//                                    MediaMetadataRetriever.OPTION_CLOSEST));
+                            startFrame.setImageBitmap(retriever.getFrameAtTime(minValue.longValue()*1000000,
+                                    MediaMetadataRetriever.OPTION_CLOSEST));
+                            startFrame.invalidate();
+                            endFrame.setImageBitmap(retriever.getFrameAtTime(maxValue.longValue()*1000000,
+                                    MediaMetadataRetriever.OPTION_CLOSEST));
+                            endFrame.invalidate();
+                        }
+                    });
+
+                    builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            clip.setStart(rangeSeekbar.getSelectedMinValue().longValue()*1000);
+                            clip.setEnd(rangeSeekbar.getSelectedMaxValue().longValue()*1000);
+                            projectRef.child(clip.getKey()).setValue(clip);
                         }
                     });
 
@@ -301,7 +318,6 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                     }
                 }
             }
-            ((MainActivity) mContext).getCurrentVideoProject().setClips(videoList);
             notifyDataSetChanged();
         }
 
@@ -311,8 +327,8 @@ public class TimelineAdapter extends RecyclerView.Adapter {
             clip.setKey(dataSnapshot.getKey());
             for (int i = 0; i < videoList.size(); i++) {
                 if (dataSnapshot.getKey().equals(videoList.get(i).getKey())) {
+                    Log.d("d", "CHILD CHANGED -------------------------------------------------");
                     videoList.set(i, clip);
-                    ((MainActivity) mContext).getCurrentVideoProject().setClips(videoList);
                     notifyDataSetChanged();
                     return;
                 }

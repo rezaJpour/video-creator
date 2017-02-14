@@ -39,13 +39,13 @@
         app:corner_radius="10"
         app:min_value="0"
         app:max_value="100"
-        app:gap="0"
+        app:gap="1"
         app:bar_color="@color/colorAccent"
         app:bar_highlight_color="@color/dirtyCyan"
         app:left_thumb_color="@color/colorAccent"
         app:right_thumb_color="@color/colorAccent"
         app:left_thumb_color_pressed="@color/dirtyCyan"
         app:right_thumb_color_pressed="@color/dirtyCyan"
-        app:data_type="_integer"/>
+        app:data_type="_long"/>
 
 </RelativeLayout>
