@@ -65,6 +65,7 @@ public class VideoPickerAdapter extends RecyclerView.Adapter<VideoPickerAdapter.
         clip.setPath(myVideo.getFilePath());
         clip.setStart(0);
         clip.setEnd(myVideo.getTotalTime());
+        clip.setLengthOfClip(myVideo.getTotalTime());
 
         if(index == videoList.size()){
             clip.setNextClipKey("");

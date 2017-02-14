@@ -11,6 +11,7 @@ public class Clip {
     private String path;
     private long start;
     private long end;
+    private long lengthOfClip;
     private String nextClipKey;
 
     public Clip() {
@@ -55,5 +56,13 @@ public class Clip {
 
     public void setNextClipKey(String nextClipKey) {
         this.nextClipKey = nextClipKey;
+    }
+
+    public long getLengthOfClip() {
+        return lengthOfClip;
+    }
+
+    public void setLengthOfClip(long lengthOfClip) {
+        this.lengthOfClip = lengthOfClip;
     }
 }
