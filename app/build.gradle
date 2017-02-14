@@ -44,6 +44,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:9.0.2'
     compile 'com.google.code.gson:gson:2.2.4'
     testCompile 'junit:junit:4.12'
+    compile 'com.crystal:crystalrangeseekbar:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

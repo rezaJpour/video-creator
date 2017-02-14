@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
+import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -152,6 +154,41 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                     return true;
                 }
             });
+            holder1.video.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+                    View vw = LayoutInflater.from(mContext).inflate(R.layout.edit_video_view,null,false);
+                    builder.setView(vw);
+
+                    final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                    retriever.setDataSource(clip.getPath());
+
+                    final ImageView startFrame = (ImageView) vw.findViewById(R.id.startFrame);
+                    final ImageView endFrame = (ImageView) vw.findViewById(R.id.endFrame);
+
+                    // get seekbar from view
+                    final CrystalRangeSeekbar rangeSeekbar = (CrystalRangeSeekbar) vw.findViewById(R.id.rangeSeekbar);
+
+                    // set listener
+                    rangeSeekbar.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
+                        @Override
+                        public void valueChanged(Number minValue, Number maxValue) {
+                            Log.d("MIN",minValue.longValue()+"");
+                            Log.d("MAX",maxValue.longValue()+"");
+//                            startFrame.setImageBitmap(retriever.getFrameAtTime(minValue.longValue(),
+//                                    MediaMetadataRetriever.OPTION_CLOSEST));
+//                            endFrame.setImageBitmap(retriever.getFrameAtTime(maxValue.longValue(),
+//                                    MediaMetadataRetriever.OPTION_CLOSEST));
+                        }
+                    });
+
+                    final AlertDialog ad = builder.create();
+
+                    ad.show();
+                }
+            });
         }
     }
 
@@ -181,7 +218,6 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View view) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setTitle(R.string.choose_video);
 
                     View vw = LayoutInflater.from(mContext).inflate(R.layout.video_list_view,null,false);
                     mListView = (RecyclerView) vw.findViewById(R.id.list_view);
