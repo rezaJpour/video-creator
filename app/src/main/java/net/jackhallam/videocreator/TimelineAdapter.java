@@ -17,10 +17,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TableRow;
 
 import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
@@ -177,22 +179,35 @@ public class TimelineAdapter extends RecyclerView.Adapter {
 
                     rangeSeekbar.setMinStartValue((int)(clip.getStart()/1000)).setMaxStartValue((int)(clip.getEnd()/1000)).apply();
 
+                    Log.d("d", "CLIP START: "+clip.getStart()+", CLIP END: "+clip.getEnd()+" ------------------");
+
+                    final long[] vals = new long[2];
+                    vals[0] = -1;
+                    vals[1] = -1;
+
                     // set listener
                     rangeSeekbar.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
                         @Override
                         public void valueChanged(Number minValue, Number maxValue) {
-                            Log.d("MIN",minValue.longValue()+"");
-                            Log.d("MAX",maxValue.longValue()+"");
-                            startFrame.setImageBitmap(retriever.getFrameAtTime(minValue.longValue()*1000000,
-                                    MediaMetadataRetriever.OPTION_CLOSEST));
-                            startFrame.invalidate();
-                            endFrame.setImageBitmap(retriever.getFrameAtTime(maxValue.longValue()*1000000,
-                                    MediaMetadataRetriever.OPTION_CLOSEST));
-                            endFrame.invalidate();
+                            if(vals[0] != minValue.longValue()) {
+                                Log.d("MIN",minValue.longValue()+"");
+                                startFrame.setImageBitmap(retriever.getFrameAtTime(minValue.longValue()*1000000,
+                                        MediaMetadataRetriever.OPTION_CLOSEST));
+                                startFrame.invalidate();
+                                vals[0] = minValue.longValue();
+                            }
+                            if(vals[1] != maxValue.longValue()) {
+                                Log.d("MAX",maxValue.longValue()+"");
+                                endFrame.setImageBitmap(retriever.getFrameAtTime(maxValue.longValue()*1000000,
+                                        MediaMetadataRetriever.OPTION_CLOSEST));
+                                endFrame.invalidate();
+                                vals[1] = maxValue.longValue();
+                            }
                         }
                     });
 
-                    builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(" ", null);
+                    builder.setPositiveButton(" ", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             clip.setStart(rangeSeekbar.getSelectedMinValue().longValue()*1000);
@@ -200,10 +215,32 @@ public class TimelineAdapter extends RecyclerView.Adapter {
                             projectRef.child(clip.getKey()).setValue(clip);
                         }
                     });
+                    final AlertDialog alertDialog = builder.create();
+                    alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(DialogInterface dialogInterface) {
+                            try {
+                                int fortyEightDP = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, mContext.getResources().getDisplayMetrics());
 
-                    final AlertDialog ad = builder.create();
+                                TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(fortyEightDP, fortyEightDP);
 
-                    ad.show();
+                                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setLayoutParams(layoutParams);
+
+                                alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setLayoutParams(layoutParams);
+
+                                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setBackgroundResource(R.drawable.ic_check_white_48dp);
+                                alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setBackgroundResource(R.drawable.ic_close_white_48dp);
+
+                                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).invalidate();
+                                alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).invalidate();
+
+                                alertDialog.getWindow().setBackgroundDrawableResource(R.color.lightBackgroundColor);
+                            } catch (Exception e) {
+                                Log.d("d", e.getMessage());
+                            }
+                        }
+                    });
+                    alertDialog.show();
                 }
             });
         }
@@ -327,7 +364,7 @@ public class TimelineAdapter extends RecyclerView.Adapter {
             clip.setKey(dataSnapshot.getKey());
             for (int i = 0; i < videoList.size(); i++) {
                 if (dataSnapshot.getKey().equals(videoList.get(i).getKey())) {
-                    Log.d("d", "CHILD CHANGED -------------------------------------------------");
+                    Log.d("d", "CHILD CHANGED ------------------------------------------------- ");
                     videoList.set(i, clip);
                     notifyDataSetChanged();
                     return;

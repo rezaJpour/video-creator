@@ -1,51 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:background="@color/backgroundColor"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/lightBackgroundColor"
+    android:orientation="vertical"
+    android:padding="6dp">
 
-    <LinearLayout android:orientation="horizontal"
+    <LinearLayout
+        android:id="@+id/frames"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/frames"
-        android:paddingTop="15dip"
-        android:paddingBottom="15dip">
+        android:orientation="horizontal"
+        android:padding="6dp"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp">
+
         <ImageView
             android:id="@+id/startFrame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:src="@drawable/common_google_signin_btn_icon_dark"
-            />
+            android:padding="6dp"
+            android:src="@drawable/common_google_signin_btn_icon_dark" />
 
         <ImageView
             android:id="@+id/endFrame"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:src="@drawable/common_google_signin_btn_icon_dark"
-            />
+            android:padding="6dp"
+            android:src="@drawable/common_google_signin_btn_icon_dark" />
     </LinearLayout>
 
     <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
         android:id="@+id/rangeSeekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/frames"
-        app:corner_radius="10"
-        app:min_value="0"
-        app:max_value="100"
-        app:gap="1"
         app:bar_color="@color/colorAccent"
         app:bar_highlight_color="@color/dirtyCyan"
+        app:corner_radius="10"
+        app:data_type="_long"
+        app:gap="1"
         app:left_thumb_color="@color/colorAccent"
-        app:right_thumb_color="@color/colorAccent"
         app:left_thumb_color_pressed="@color/dirtyCyan"
-        app:right_thumb_color_pressed="@color/dirtyCyan"
-        app:data_type="_long"/>
+        app:right_thumb_color="@color/colorAccent"
+        app:right_thumb_color_pressed="@color/dirtyCyan" />
 
-</RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
